@@ -1,0 +1,1 @@
+// File deliberately emptied to disable i18next
