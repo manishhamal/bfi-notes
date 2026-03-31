@@ -91,7 +91,7 @@ export default function TranslationHelper() {
            </p>
            <div 
             id="translated-content-area"
-            className="prose prose-lg dark:prose-invert max-w-none transition-all duration-300"
+            className="prose prose-lg dark:prose-invert professional-doc max-w-none transition-all duration-300"
             dangerouslySetInnerHTML={{ __html: content }}
            />
         </div>

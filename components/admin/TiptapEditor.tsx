@@ -17,7 +17,8 @@ import {
   Type, Palette, Highlighter, AlignLeft, AlignCenter, 
   AlignRight, List, ListOrdered, Heading1, Heading2, 
   Heading3, Link as LinkIcon, Image as ImageIcon, 
-  Table as TableIcon, Undo, Redo, Quote, Code, ChevronDown
+  Table as TableIcon, Undo, Redo, Quote, Code, ChevronDown,
+  AlignJustify, Indent as IndentIcon, Outdent as OutdentIcon
 } from 'lucide-react';
 
 // Custom font size extension
@@ -52,6 +53,74 @@ const FontSize = Extension.create({
       },
       unsetFontSize: () => ({ chain }: any) => {
         return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+      },
+    };
+  },
+});
+
+// Custom Indent extension
+const Indent = Extension.create({
+  name: 'indent',
+  addOptions() {
+    return {
+      types: ['paragraph', 'heading', 'blockquote'],
+      minLevel: 0,
+      maxLevel: 3,
+    };
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          indent: {
+            default: 0,
+            parseHTML: element => parseInt(element.getAttribute('data-indent') || '0', 10),
+            renderHTML: attributes => {
+              if (!attributes.indent) return {};
+              return { 
+                'data-indent': attributes.indent,
+                class: `indent-${attributes.indent} professional-doc` 
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+  addCommands(): any {
+    return {
+      indent: () => ({ tr, state, dispatch }: any) => {
+        const { selection } = state;
+        tr = tr.setSelection(selection);
+        const { from, to } = selection;
+        state.doc.nodesBetween(from, to, (node: any, pos: any) => {
+          if (this.options.types.includes(node.type.name)) {
+            const currentIndent = node.attrs.indent || 0;
+            const newIndent = Math.min(currentIndent + 1, this.options.maxLevel);
+            if (newIndent !== currentIndent) {
+              tr = tr.setNodeMarkup(pos, undefined, { ...node.attrs, indent: newIndent });
+            }
+          }
+        });
+        if (dispatch) dispatch(tr);
+        return true;
+      },
+      outdent: () => ({ tr, state, dispatch }: any) => {
+        const { selection } = state;
+        tr = tr.setSelection(selection);
+        const { from, to } = selection;
+        state.doc.nodesBetween(from, to, (node: any, pos: any) => {
+          if (this.options.types.includes(node.type.name)) {
+            const currentIndent = node.attrs.indent || 0;
+            const newIndent = Math.max(currentIndent - 1, this.options.minLevel);
+            if (newIndent !== currentIndent) {
+              tr = tr.setNodeMarkup(pos, undefined, { ...node.attrs, indent: newIndent });
+            }
+          }
+        });
+        if (dispatch) dispatch(tr);
+        return true;
       },
     };
   },
@@ -116,6 +185,12 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive({ textAlign: 'left' }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Align Left"><AlignLeft size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive({ textAlign: 'center' }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Align Center"><AlignCenter size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive({ textAlign: 'right' }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Align Right"><AlignRight size={18} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive({ textAlign: 'justify' }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Justify"><AlignJustify size={18} /></button>
+
+      <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
+
+      <button type="button" onClick={() => editor.chain().focus().indent().run()} className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400" title="Indent"><IndentIcon size={18} /></button>
+      <button type="button" onClick={() => editor.chain().focus().outdent().run()} className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400" title="Outdent"><OutdentIcon size={18} /></button>
 
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
 
@@ -152,7 +227,12 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       TextStyle,
       Highlight.configure({ multicolor: true }),
       FontSize,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Indent,
+      TextAlign.configure({ 
+        types: ['heading', 'paragraph'],
+        alignments: ['left', 'center', 'right', 'justify'],
+        defaultAlignment: 'justify',
+      }),
       Link.configure({ openOnClick: false }),
       Image,
       Table.configure({ resizable: true }),
@@ -166,7 +246,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm md:prose-base dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4 md:p-6',
+        class: 'prose prose-sm md:prose-base dark:prose-invert professional-doc max-w-none focus:outline-none min-h-[400px] p-4 md:p-6',
       },
     },
   });
