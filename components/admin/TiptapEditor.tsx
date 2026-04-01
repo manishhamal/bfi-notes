@@ -246,7 +246,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm md:prose-base dark:prose-invert professional-doc max-w-none focus:outline-none min-h-[400px] p-4 md:p-6',
+        class:
+          'tiptap prose prose-sm md:prose-base dark:prose-invert document-paper professional-doc max-w-none focus:outline-none min-h-[500px] shadow-none border-none rounded-none',
       },
     },
   });

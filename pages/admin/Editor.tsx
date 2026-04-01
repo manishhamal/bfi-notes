@@ -153,7 +153,7 @@ export default function Editor() {
   const isDark = typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false;
 
   return (
-    <div className="max-w-4xl mx-auto pb-20">
+    <div className="max-w-7xl mx-auto document-container pb-20 px-4">
       <div className="flex items-center justify-between mb-8">
         <button onClick={() => navigate('/admin')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
           <ArrowLeft size={20} />

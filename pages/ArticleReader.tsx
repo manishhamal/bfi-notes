@@ -336,8 +336,8 @@ const ArticleReader: React.FC = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="pt-24 pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
+      <main className="pt-24 pb-20 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto document-container">
           <FadeIn>
             <header className="mb-8 text-center">
               <div className="inline-block px-3 py-1 rounded-full bg-primary-500/10 text-primary-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
@@ -353,17 +353,29 @@ const ArticleReader: React.FC = () => {
           </FadeIn>
 
           <FadeIn delay={200}>
-            <div 
-              ref={contentRef}
-              className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
-                prose-headings:font-bold prose-headings:tracking-tight
-                prose-p:leading-relaxed prose-p:mb-6
-                prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-6 prose-blockquote:italic
-                prose-li:mb-2
-                [&_mark]:px-1 [&_mark]:rounded-sm`}
-              style={{ fontSize: `${fontSize}px`, lineHeight: 1.6 }}
-              dangerouslySetInnerHTML={{ __html: currentLanguage === 'en' ? article.content : (article.content_ne || article.content) }}
-            />
+            <div
+              className={[
+                'document-paper mb-12',
+                theme === 'sepia' ? 'document-paper-sepia' : '',
+                fontSize > 22 ? '' : 'document-columns',
+                'professional-doc',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <div 
+                ref={contentRef}
+                lang={currentLanguage === 'ne' ? 'ne' : 'en'}
+                className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
+                  prose-headings:font-bold prose-headings:tracking-tight
+                  prose-p:leading-relaxed
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-6 prose-blockquote:italic
+                  prose-li:mb-2
+                  [&_mark]:px-1 [&_mark]:rounded-sm`}
+                style={{ fontSize: `${fontSize}px` }}
+                dangerouslySetInnerHTML={{ __html: currentLanguage === 'en' ? article.content : (article.content_ne || article.content) }}
+              />
+            </div>
           </FadeIn>
 
           {/* Author Section */}

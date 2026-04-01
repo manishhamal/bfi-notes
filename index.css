@@ -72,9 +72,91 @@
     hyphens: auto;
   }
 
-  .prose .indent-1, .tiptap .indent-1 { padding-left: 2rem; }
-  .prose .indent-2, .tiptap .indent-2 { padding-left: 4rem; }
-  .prose .indent-3, .tiptap .indent-3 { padding-left: 6rem; }
+  /* A4-like sheet wrapper: centers content and matches reader/editor width */
+  .document-container {
+    width: 100%;
+    max-width: 80rem; /* aligns with max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .document-paper {
+    background-color: #fafafa;
+    color: #0f172a;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 10px 40px -10px rgba(0, 0, 0, 0.12),
+      0 2px 6px -2px rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    padding: clamp(2rem, 4vw, 3.25rem) clamp(1.75rem, 4vw, 3.5rem);
+    margin: 0 auto;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    position: relative;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  @media (max-width: 768px) {
+    .document-paper {
+      padding: 1.5rem 1.25rem;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      box-shadow: none;
+    }
+  }
+
+  .dark .document-paper {
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+
+  /* Sepia reader: warm paper inside the sheet */
+  .document-paper.document-paper-sepia {
+    background-color: #f0e6d2;
+    color: #5b4636;
+    border-color: rgba(91, 70, 54, 0.12);
+    box-shadow:
+      0 1px 2px rgba(91, 70, 54, 0.06),
+      0 10px 36px -12px rgba(91, 70, 54, 0.15);
+  }
+
+  .document-columns {
+    column-count: 2;
+    column-gap: 3rem; /* gap-12 */
+    column-rule: 1px solid rgba(0, 0, 0, 0.05);
+    orphans: 3;
+    widows: 3;
+  }
+
+  .dark .document-columns {
+    column-rule-color: rgba(255,255,255,0.05);
+  }
+
+  @media (max-width: 1024px) {
+    .document-columns {
+      column-count: 1;
+    }
+  }
+
+  .professional-doc {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .professional-doc h1,
+  .professional-doc h2,
+  .professional-doc h3 {
+    column-span: all; /* Headings span both columns */
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: left; /* Left-aligned like the reference image */
+    page-break-after: avoid;
+    break-after: avoid;
+  }
 
   /* Strict Justification & Uniform Look */
   .professional-doc p,
@@ -85,6 +167,8 @@
     text-align: justify !important;
     text-justify: inter-word;
     line-height: 2 !important; /* Extra breathing room for Nepali characters */
+    break-inside: avoid-column; /* Prevent paragraphs from being split awkwardly */
+    margin-bottom: 1.5rem;
   }
 
   .professional-doc strong,
