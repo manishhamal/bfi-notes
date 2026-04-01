@@ -38,6 +38,19 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --color-background: #0b1220;
+    --color-foreground: #e5e7eb;
+    --color-muted: #94a3b8;
+    --color-accent: #e5e7eb;
+    --color-accent-foreground: #0b1220;
+  }
+
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
@@ -110,6 +123,11 @@
     color: #e5e5e5;
     border-color: rgba(255, 255, 255, 0.06);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+
+  /* Dark mode: prevent TipTap inline ink colors from going invisible */
+  .dark .document-paper :where(p, li, blockquote p, span) {
+    color: inherit !important;
   }
 
   /* Sepia reader: warm paper inside the sheet */
