@@ -12,6 +12,8 @@ interface AuthorProfile {
   bio: string;
   noteCount: number;
   topics: string[];
+  noteTitles: string[];
+  noteTags: string[];
 }
 
 const Authors: React.FC = () => {
@@ -28,25 +30,36 @@ const Authors: React.FC = () => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       
-      // 1. Topic/Category match first (per user requirement 'listing only matched topics and enter to content')
-      const allTopics = Array.from(new Set(authors.flatMap(a => a.topics))) as string[];
+      // 1. Topic/Category match first
+      const allTopics = Array.from(new Set(authors.flatMap(a => a.topics || []))) as string[];
       const matchedTopic = allTopics.find(t => t.toLowerCase() === query);
       
       if (matchedTopic) {
         navigate(`/articles?category=${encodeURIComponent(matchedTopic)}`);
+        setSearchQuery('');
         return;
       }
 
-      // 2. Author name match
-      const matchedAuthor = authors.find(a => a.name.toLowerCase() === query);
+      // 2. Article Title match (Deep search)
+      const matchedArticle = allArticles.find(a => (a.title || '').toLowerCase().includes(query));
+      if (matchedArticle) {
+        navigate(`/articles/${matchedArticle.id}`);
+        setSearchQuery('');
+        return;
+      }
+
+      // 3. Author name match
+      const matchedAuthor = authors.find(a => (a.name || '').toLowerCase() === query);
       if (matchedAuthor) {
         handleSelectAuthor(matchedAuthor.name);
+        setSearchQuery('');
         return;
       }
 
-      // 3. Fallback: select the first filtered author if available
+      // 4. Fallback: select the first filtered author if available
       if (filteredAuthors.length > 0) {
         handleSelectAuthor(filteredAuthors[0].name);
+        setSearchQuery('');
       }
     }
   };
@@ -71,14 +84,32 @@ const Authors: React.FC = () => {
               avatar: article.author_avatar || `https://ui-avatars.com/api/?name=${name}&background=random`,
               bio: article.author_bio || 'BFI Subject Matter Expert',
               noteCount: 0,
-              topics: []
+              topics: [],
+              noteTitles: [],
+              noteTags: []
             });
           }
           
           const profile = authorMap.get(name)!;
           profile.noteCount += 1;
+          
+          // Index article title
+          if (article.title && !profile.noteTitles.includes(article.title)) {
+            profile.noteTitles.push(article.title);
+          }
+          
+          // Index category as topic
           if (article.category && !profile.topics.includes(article.category)) {
             profile.topics.push(article.category);
+          }
+          
+          // Index tags
+          if (article.tags && Array.isArray(article.tags)) {
+            article.tags.forEach((tag: string) => {
+              if (tag && !profile.noteTags.includes(tag)) {
+                profile.noteTags.push(tag);
+              }
+            });
           }
         });
         
@@ -93,8 +124,10 @@ const Authors: React.FC = () => {
     if (!searchQuery) return authors;
     const lowerQuery = searchQuery.toLowerCase().trim();
     return authors.filter(a => 
-      a.name.toLowerCase().includes(lowerQuery) || 
-      a.topics.some(t => t.toLowerCase().includes(lowerQuery))
+      (a.name || '').toLowerCase().includes(lowerQuery) || 
+      (a.topics || []).some(t => t.toLowerCase().includes(lowerQuery)) ||
+      (a.noteTitles || []).some(t => t.toLowerCase().includes(lowerQuery)) ||
+      (a.noteTags || []).some(t => t.toLowerCase().includes(lowerQuery))
     );
   }, [authors, searchQuery]);
 
