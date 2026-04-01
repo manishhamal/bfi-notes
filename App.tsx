@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Articles from './pages/Articles';
 import ArticleReader from './pages/ArticleReader';
 import About from './pages/About';
+import Authors from './pages/Authors';
 import { AuthProvider } from './components/AuthProvider';
 import Login from './pages/Login';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="articles" element={<Articles />} />
+            <Route path="authors" element={<Authors />} />
             <Route path="about" element={<About />} />
           </Route>
           <Route path="articles/:id" element={<ArticleReader />} />

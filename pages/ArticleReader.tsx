@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Type, 
@@ -11,7 +11,8 @@ import {
   Maximize2, 
   Minimize2,
   BookOpen,
-  Settings
+  Settings,
+  ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'react-toastify';
@@ -367,22 +368,31 @@ const ArticleReader: React.FC = () => {
 
           {/* Author Section */}
           <FadeIn delay={400}>
-            <footer className={`mt-6 pt-6 border-t flex items-center justify-end gap-5 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
+            <div className={`mt-12 pt-8 border-t flex items-center justify-end gap-6 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
               <div className="text-right">
-                <h3 className="text-lg font-bold tracking-tight">{article.authorName}</h3>
-                <p className="text-[11px] opacity-50 font-medium mt-0.5 leading-tight max-w-[200px] ml-auto">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-primary-500 mb-1">About the Author</p>
+                <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{article.authorName}</h3>
+                <p className="text-sm opacity-60 font-medium mt-1 leading-relaxed max-w-[250px] ml-auto text-slate-600 dark:text-slate-400">
                   {article.authorBio || 'BFI Subject Matter Expert'}
                 </p>
               </div>
-              <div className="relative">
+              <Link 
+                to={`/authors?name=${encodeURIComponent(article.authorName)}`}
+                className="relative group block"
+                title={`View ${article.authorName}'s profile`}
+              >
+                <div className="absolute inset-0 bg-primary-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 <img 
                   src={article.authorAvatar || `https://ui-avatars.com/api/?name=${article.authorName}&background=random`} 
                   alt={article.authorName}
-                  className="relative w-28 h-28 rounded-md object-cover grayscale brightness-110 contrast-110"
+                  className="relative w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover shadow-xl grayscale group-hover:grayscale-0 transition-all duration-500 ring-4 ring-transparent group-hover:ring-primary-500/10 cursor-pointer"
                   referrerPolicy="no-referrer"
                 />
-              </div>
-            </footer>
+                <div className="absolute -bottom-2 -right-2 bg-primary-500 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg">
+                  <ChevronRight size={14} />
+                </div>
+              </Link>
+            </div>
           </FadeIn>
         </div>
       </main>

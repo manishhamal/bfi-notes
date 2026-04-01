@@ -78,6 +78,7 @@ const Layout: React.FC = () => {
 
   const navLinks = [
     { name: 'Study Notes', path: '/articles' },
+    { name: 'Authors', path: '/authors' },
     { name: 'About PSC Prep', path: '/about' },
   ];
 
