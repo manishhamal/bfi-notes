@@ -21,6 +21,24 @@ import { supabase } from '../lib/supabase';
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
+const READER_FONT_SIZE_KEY = 'bfi-notes-reader-font-size';
+const READER_FONT_MIN = 12;
+const READER_FONT_MAX = 32;
+const READER_FONT_DEFAULT = 14;
+
+function readStoredReaderFontSize(): number {
+  if (typeof window === 'undefined') return READER_FONT_DEFAULT;
+  try {
+    const raw = localStorage.getItem(READER_FONT_SIZE_KEY);
+    if (raw == null) return READER_FONT_DEFAULT;
+    const n = parseInt(raw, 10);
+    if (Number.isFinite(n) && n >= READER_FONT_MIN && n <= READER_FONT_MAX) return n;
+  } catch {
+    /* ignore */
+  }
+  return READER_FONT_DEFAULT;
+}
+
 const ArticleReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -56,7 +74,7 @@ const ArticleReader: React.FC = () => {
     if (id) fetchArticle();
   }, [id]);
   
-  const [fontSize, setFontSize] = useState(18);
+  const [fontSize, setFontSize] = useState(() => readStoredReaderFontSize());
   const [theme, setTheme] = useState<ReaderTheme>('light');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -67,6 +85,14 @@ const ArticleReader: React.FC = () => {
   
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(READER_FONT_SIZE_KEY, String(fontSize));
+    } catch {
+      /* quota / private mode */
+    }
+  }, [fontSize]);
 
   // Sync body background with reader theme
   useEffect(() => {
