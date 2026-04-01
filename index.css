@@ -166,7 +166,7 @@
   .professional-doc.tiptap p {
     text-align: justify !important;
     text-justify: inter-word;
-    line-height: 2 !important; /* Extra breathing room for Nepali characters */
+    line-height: 1.55 !important;
     break-inside: avoid-column; /* Prevent paragraphs from being split awkwardly */
     margin-bottom: 1.5rem;
   }
@@ -178,6 +178,15 @@
   .professional-doc h3 {
     font-weight: 800 !important; /* Ultra-bold to make Nepali translation pop */
     color: var(--color-foreground) !important;
+  }
+
+  /* Reader/editor dark sheet: --color-foreground stays slate-900; force light ink */
+  .dark .document-paper.professional-doc h1,
+  .dark .document-paper.professional-doc h2,
+  .dark .document-paper.professional-doc h3,
+  .dark .document-paper.professional-doc strong,
+  .dark .document-paper.professional-doc b {
+    color: #e5e5e5 !important;
   }
 
   .prose blockquote {
