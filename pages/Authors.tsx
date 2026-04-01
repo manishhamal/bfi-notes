@@ -145,19 +145,20 @@ const Authors: React.FC = () => {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none mb-12 relative"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-8 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none mb-12 relative overflow-hidden"
             >
-              <div className="absolute top-4 right-4 z-20">
+              {/* Responsive Back Button */}
+              <div className="mb-6 md:absolute md:top-4 md:right-4 z-20">
                 <button 
                   onClick={() => handleSelectAuthor(null)}
-                  className="px-3 py-1.5 flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-all text-xs font-bold text-slate-600 dark:text-slate-300"
+                  className="w-full md:w-auto px-4 py-2 flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all text-xs font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 md:border-none shadow-sm md:shadow-none"
                 >
                   <ArrowRight size={14} className="rotate-180" /> Back to Authors
                 </button>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start relative z-10">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-md flex-shrink-0 border-2 border-white dark:border-slate-800">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start relative z-10 text-center md:text-left">
+                <div className="w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 border-2 border-white dark:border-slate-800">
                   <img 
                     src={selectedAuthor.avatar} 
                     alt={selectedAuthor.name}
@@ -166,18 +167,18 @@ const Authors: React.FC = () => {
                 </div>
                 
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-3 mb-2.5">
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{selectedAuthor.name}</h2>
+                  <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-3">
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">{selectedAuthor.name}</h2>
                     <span className="px-2.5 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-[10px] font-bold rounded-md">
                       {selectedAuthor.noteCount} Notes
                     </span>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base leading-relaxed mb-5 font-medium max-w-2xl">
+                  <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base leading-relaxed mb-6 font-medium max-w-2xl mx-auto md:ml-0">
                     {selectedAuthor.bio}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap justify-center md:justify-start gap-2">
                     {selectedAuthor.topics.map(topic => (
-                      <span key={topic} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded-md border border-slate-200/50 dark:border-slate-700/50 uppercase tracking-wider">
+                      <span key={topic} className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded-lg border border-slate-200/50 dark:border-slate-700/50 uppercase tracking-wider">
                         #{topic}
                       </span>
                     ))}
@@ -186,19 +187,22 @@ const Authors: React.FC = () => {
               </div>
 
               {/* Author's Notes List */}
-              <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
-                <h3 className="text-lg font-bold mb-8 flex items-center gap-2 text-slate-900 dark:text-white">
+              <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-slate-100 dark:border-slate-800">
+                <h3 className="text-base md:text-lg font-bold mb-6 md:mb-8 flex items-center justify-center md:justify-start gap-2 text-slate-900 dark:text-white">
                   <BookOpen size={18} className="text-primary-500" />
                   Notes by {selectedAuthor.name}
                 </h3>
-                <div className="space-y-8">
+                <div className="grid grid-cols-1 gap-4 md:gap-6">
                   {selectedAuthorArticles.map((article, idx) => (
                     <FadeIn key={article.id} delay={idx * 50}>
-                      <ArticleCard article={{
-                        ...article,
-                        authorName: article.author_name || 'Admin',
-                        tags: article.tags || []
-                      }} />
+                      <ArticleCard 
+                        compact={true}
+                        article={{
+                          ...article,
+                          authorName: article.author_name || 'Admin',
+                          tags: article.tags || []
+                        }} 
+                      />
                     </FadeIn>
                   ))}
                 </div>

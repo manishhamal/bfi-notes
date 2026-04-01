@@ -6,15 +6,16 @@ import { User, ChevronRight } from 'lucide-react';
 interface ArticleCardProps {
   article: Article;
   variant?: 'standard' | 'featured' | 'minimal';
+  compact?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard' }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard', compact = false }) => {
   const navigate = useNavigate();
 
   return (
     <div 
       onClick={() => navigate(`/articles/${article.id}`)}
-      className="group block w-full p-6 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-primary-500/50 dark:hover:border-primary-400/50 hover:bg-slate-50/50 dark:hover:bg-primary-900/5 transition-all cursor-pointer relative overflow-hidden"
+      className={`group block w-full rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-primary-500/50 dark:hover:border-primary-400/50 hover:bg-slate-50/50 dark:hover:bg-primary-900/5 transition-all cursor-pointer relative overflow-hidden ${compact ? 'p-4 md:p-5' : 'p-6'}`}
     >
       <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
         <ChevronRight size={18} className="text-primary-500" />
@@ -47,7 +48,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard'
             ))}
           </div>
           
-          {article.authorName && (
+          {!compact && article.authorName && (
             <button 
               onClick={(e) => {
                 e.stopPropagation();
