@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ArticleCard from '../components/ArticleCard';
@@ -8,6 +8,7 @@ import { Category } from '../types';
 import { supabase } from '../lib/supabase';
 
 const Articles: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
   
@@ -85,6 +86,35 @@ const Articles: React.FC = () => {
     }
   };
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      
+      // 1. Check for Category match
+      const matchedCategory = Object.values(Category).find(cat => cat.toLowerCase() === query);
+      if (matchedCategory) {
+        handleCategoryChange(matchedCategory);
+        setSearchQuery('');
+        return;
+      }
+
+      // 2. Check for Author match
+      const authors = Array.from(new Set(articles.map(a => a.authorName).filter(Boolean))) as string[];
+      const matchedAuthor = authors.find(name => name.toLowerCase() === query);
+      if (matchedAuthor) {
+        navigate(`/authors?name=${encodeURIComponent(matchedAuthor)}`);
+        setSearchQuery('');
+        return;
+      }
+
+      // 3. Fallback: Navigate to the first filtered article
+      if (filteredArticles.length > 0) {
+        navigate(`/articles/${filteredArticles[0].id}`);
+        setSearchQuery('');
+      }
+    }
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
     setIsDragging(true);
@@ -140,19 +170,27 @@ const Articles: React.FC = () => {
               onMouseMove={handleMouseMove}
               className={`flex-1 min-w-0 flex items-center h-full overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain cursor-grab active:cursor-grabbing select-none transition-opacity duration-200 ${isDragging ? 'scroll-auto' : 'scroll-smooth'} ${isSearchOpen ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}
             >
-              {Object.values(Category).filter(cat => cat !== Category.All).map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => !hasMoved && handleCategoryChange(cat)}
-                  className={`flex-shrink-0 h-full px-4 md:px-8 whitespace-nowrap transition-all border-r border-slate-200 dark:border-slate-800 last:border-r-0 active:scale-95 ${
-                    activeCategory === cat
-                      ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400'
-                      : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+              {Object.values(Category).filter(cat => cat !== Category.All).map((cat) => {
+                // Smart Search Highlight for Categories
+                const isMatchedBySearch = searchQuery.trim() && cat.toLowerCase().includes(searchQuery.toLowerCase().trim());
+                
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => !hasMoved && handleCategoryChange(cat)}
+                    className={`flex-shrink-0 h-full px-4 md:px-8 whitespace-nowrap transition-all border-r border-slate-200 dark:border-slate-800 last:border-r-0 active:scale-95 flex items-center gap-2 ${
+                      activeCategory === cat
+                        ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400'
+                        : isMatchedBySearch
+                          ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                          : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    {cat}
+                    {isMatchedBySearch && <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Search Section */}
@@ -164,6 +202,7 @@ const Articles: React.FC = () => {
                   type="text"
                   placeholder="Search everything..."
                   value={searchQuery}
+                  onKeyDown={handleSearchKeyDown}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="bg-transparent border-none focus:outline-none text-xs w-40 placeholder:text-slate-400 font-medium normal-case tracking-normal"
                 />
@@ -197,6 +236,7 @@ const Articles: React.FC = () => {
                         type="text"
                         placeholder="Search everything..."
                         value={searchQuery}
+                        onKeyDown={handleSearchKeyDown}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="flex-1 bg-transparent border-none focus:outline-none text-[10px] placeholder:text-slate-400 font-medium normal-case tracking-normal"
                       />
