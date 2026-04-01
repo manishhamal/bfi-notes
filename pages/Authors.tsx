@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Search, User, BookOpen, ArrowRight, X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
@@ -15,6 +15,7 @@ interface AuthorProfile {
 }
 
 const Authors: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedAuthorParam = searchParams.get('name');
   
@@ -22,6 +23,33 @@ const Authors: React.FC = () => {
   const [allArticles, setAllArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      
+      // 1. Topic/Category match first (per user requirement 'listing only matched topics and enter to content')
+      const allTopics = Array.from(new Set(authors.flatMap(a => a.topics))) as string[];
+      const matchedTopic = allTopics.find(t => t.toLowerCase() === query);
+      
+      if (matchedTopic) {
+        navigate(`/articles?category=${encodeURIComponent(matchedTopic)}`);
+        return;
+      }
+
+      // 2. Author name match
+      const matchedAuthor = authors.find(a => a.name.toLowerCase() === query);
+      if (matchedAuthor) {
+        handleSelectAuthor(matchedAuthor.name);
+        return;
+      }
+
+      // 3. Fallback: select the first filtered author if available
+      if (filteredAuthors.length > 0) {
+        handleSelectAuthor(filteredAuthors[0].name);
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +61,6 @@ const Authors: React.FC = () => {
       if (!error && data) {
         setAllArticles(data);
         
-        // Derive unique authors
         const authorMap = new Map<string, AuthorProfile>();
         
         data.forEach(article => {
@@ -64,7 +91,7 @@ const Authors: React.FC = () => {
 
   const filteredAuthors = useMemo(() => {
     if (!searchQuery) return authors;
-    const lowerQuery = searchQuery.toLowerCase();
+    const lowerQuery = searchQuery.toLowerCase().trim();
     return authors.filter(a => 
       a.name.toLowerCase().includes(lowerQuery) || 
       a.topics.some(t => t.toLowerCase().includes(lowerQuery))
@@ -84,6 +111,7 @@ const Authors: React.FC = () => {
   const handleSelectAuthor = (name: string | null) => {
     if (name) {
       setSearchParams({ name });
+      setSearchQuery('');
     } else {
       searchParams.delete('name');
       setSearchParams(searchParams);
@@ -103,7 +131,6 @@ const Authors: React.FC = () => {
 
   return (
     <div className="pb-20">
-      {/* Header Section */}
       <header className="mb-10">
         <FadeIn>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -116,13 +143,13 @@ const Authors: React.FC = () => {
               </p>
             </div>
             
-            {/* Slimmer Search Bar */}
             <div className="relative group w-full md:w-72">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors" size={16} />
               <input 
                 type="text" 
                 placeholder="Search authors or topics..."
                 value={searchQuery}
+                onKeyDown={handleSearchKeyDown}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-100/80 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary-500/10 transition-all font-medium text-xs placeholder:text-slate-400/80"
               />
@@ -138,7 +165,6 @@ const Authors: React.FC = () => {
           </div>
         </FadeIn>
 
-        {/* Selected Author Detail View (Refined) */}
         <AnimatePresence mode="wait">
           {selectedAuthor && (
             <motion.div
@@ -147,7 +173,6 @@ const Authors: React.FC = () => {
               exit={{ opacity: 0, scale: 0.98 }}
               className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-8 border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none mb-12 relative overflow-hidden"
             >
-              {/* Responsive Back Button */}
               <div className="mb-6 md:absolute md:top-4 md:right-4 z-20">
                 <button 
                   onClick={() => handleSelectAuthor(null)}
@@ -186,7 +211,6 @@ const Authors: React.FC = () => {
                 </div>
               </div>
 
-              {/* Author's Notes List */}
               <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-slate-100 dark:border-slate-800">
                 <h3 className="text-base md:text-lg font-bold mb-6 md:mb-8 flex items-center justify-center md:justify-start gap-2 text-slate-900 dark:text-white">
                   <BookOpen size={18} className="text-primary-500" />
@@ -212,56 +236,61 @@ const Authors: React.FC = () => {
         </AnimatePresence>
       </header>
 
-      {/* Modern Compact Authors Grid */}
       {!selectedAuthor && (
         <FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredAuthors.map((author, index) => (
-              <motion.div
-                key={author.name}
-                whileHover={{ y: -3, shadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)" }}
-                className="group bg-white dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800 hover:border-primary-500/20 dark:hover:border-primary-400/20 transition-all cursor-pointer"
-                onClick={() => handleSelectAuthor(author.name)}
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ring-2 ring-slate-50 dark:ring-slate-800 group-hover:ring-primary-500/10 transition-all">
-                    <img 
-                      src={author.avatar} 
-                      alt={author.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors text-sm">
-                      {author.name}
-                    </h3>
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
-                      {author.noteCount} Notes
-                    </p>
-                  </div>
-                </div>
-                
-                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-5 leading-normal font-medium">
-                  {author.bio}
-                </p>
+            {filteredAuthors.map((author) => {
+              const matchedTopics = searchQuery.trim() 
+                ? author.topics.filter(t => t.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+                : author.topics.slice(0, 2);
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800/50">
-                  <div className="flex flex-wrap gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                    {author.topics.slice(0, 2).map((topic, i) => (
-                      <span key={topic} className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
-                        {topic}
-                      </span>
-                    ))}
-                    {author.topics.length > 2 && (
-                      <span className="text-[9px] font-bold text-primary-500 px-1.5 py-0.5 rounded">
-                        +{author.topics.length - 2}
-                      </span>
-                    )}
+              return (
+                <motion.div
+                  key={author.name}
+                  whileHover={{ y: -3, shadow: "0 10px 25px -5px rgb(0 0 0 / 0.1)" }}
+                  className="group bg-white dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800 hover:border-primary-500/20 dark:hover:border-primary-400/20 transition-all cursor-pointer"
+                  onClick={() => handleSelectAuthor(author.name)}
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ring-2 ring-slate-50 dark:ring-slate-800 group-hover:ring-primary-500/10 transition-all">
+                      <img 
+                        src={author.avatar} 
+                        alt={author.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors text-sm">
+                        {author.name}
+                      </h3>
+                      <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
+                        {author.noteCount} Notes
+                      </p>
+                    </div>
                   </div>
-                  <ChevronRight size={14} className="text-slate-300 dark:text-slate-600 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all" />
-                </div>
-              </motion.div>
-            ))}
+                  
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-5 leading-normal font-medium">
+                    {author.bio}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800/50">
+                    <div className="flex flex-wrap gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                      {matchedTopics.map((topic) => (
+                        <span key={topic} className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
+                          {topic}
+                        </span>
+                      ))}
+                      {author.topics.length > matchedTopics.length && (
+                        <span className="text-[9px] font-bold text-primary-500 px-1.5 py-0.5 rounded">
+                          +{author.topics.length - matchedTopics.length}
+                        </span>
+                      )}
+                    </div>
+                    <ChevronRight size={14} className="text-slate-300 dark:text-slate-600 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
           
           {filteredAuthors.length === 0 && (
