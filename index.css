@@ -297,4 +297,39 @@
   .prose em, .tiptap em {
     font-style: italic;
   }
+
+  /* Security Protections */
+  .security-protected {
+    transition: filter 0.3s ease;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    -webkit-touch-callout: none !important;
+  }
+
+  .security-blur {
+    filter: blur(15px) grayscale(100%);
+    pointer-events: none;
+  }
+
+  .watermark-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    opacity: 0.05;
+  }
+
+  .watermark-text {
+    font-size: 8vw;
+    font-weight: 900;
+    color: currentColor;
+    transform: rotate(-45deg);
+    white-space: nowrap;
+    text-transform: uppercase;
+    user-select: none;
+  }
 }

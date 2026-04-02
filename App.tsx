@@ -15,11 +15,13 @@ import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Editor from './pages/admin/Editor';
 import TranslationHelper from './pages/admin/TranslationHelper';
+import SecurityWrapper from './components/SecurityWrapper';
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Router>
+      <SecurityWrapper>
+        <Router>
         <Routes>
           {/* Public Website */}
           <Route path="/" element={<Layout />}>
@@ -44,6 +46,7 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </Router>
+    </SecurityWrapper>
     </AuthProvider>
   );
 };
