@@ -6,6 +6,9 @@ import Articles from './pages/Articles';
 import ArticleReader from './pages/ArticleReader';
 import About from './pages/About';
 import Authors from './pages/Authors';
+import SubjectCategoryHub from './pages/subjects/SubjectCategoryHub';
+import SubjectKindTopics from './pages/subjects/SubjectKindTopics';
+import SubjectKindList from './pages/subjects/SubjectKindList';
 import { AuthProvider } from './components/AuthProvider';
 import Login from './pages/Login';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -24,6 +27,9 @@ const App: React.FC = () => {
             <Route path="articles" element={<Articles />} />
             <Route path="authors" element={<Authors />} />
             <Route path="about" element={<About />} />
+            <Route path="subjects/:category" element={<SubjectCategoryHub />} />
+            <Route path="subjects/:category/:kind" element={<SubjectKindTopics />} />
+            <Route path="subjects/:category/:kind/:topic" element={<SubjectKindList />} />
           </Route>
           <Route path="articles/:id" element={<ArticleReader />} />
           

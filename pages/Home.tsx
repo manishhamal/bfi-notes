@@ -64,7 +64,7 @@ const Home: React.FC = () => {
             {categories.map((cat) => (
               <Link 
                 key={cat}
-                to={`/articles?category=${encodeURIComponent(cat)}`}
+                to={`/subjects/${encodeURIComponent(cat)}`}
                 className="p-6 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary-500 dark:hover:border-primary-400 hover:bg-primary-50/30 dark:hover:bg-primary-900/10 transition-all group"
               >
                 <div className="flex items-center justify-between">
