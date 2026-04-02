@@ -34,6 +34,12 @@ export default function SubjectKindTopics() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (normalizedCategory && normalizedKind === 'notes') {
+      navigate(`/articles?category=${encodeURIComponent(normalizedCategory)}`, { replace: true });
+    }
+  }, [navigate, normalizedCategory, normalizedKind]);
+
+  useEffect(() => {
     const fetchTopics = async () => {
       if (!normalizedCategory) return;
       setLoading(true);
@@ -54,6 +60,8 @@ export default function SubjectKindTopics() {
 
     fetchTopics();
   }, [normalizedCategory]);
+
+  if (normalizedKind === 'notes') return null;
 
   return (
     <div className="min-h-screen pb-24 px-4 sm:px-6">

@@ -116,7 +116,11 @@ export default function SubjectCategoryHub() {
             <button
               key={item.kind}
               type="button"
-              onClick={() => navigate(`/subjects/${encodeURIComponent(normalizedCategory)}/${item.kind}`)}
+              onClick={() =>
+                item.kind === 'notes'
+                  ? navigate(`/articles?category=${encodeURIComponent(normalizedCategory)}`)
+                  : navigate(`/subjects/${encodeURIComponent(normalizedCategory)}/${item.kind}`)
+              }
               className="group text-left rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:border-primary-500/60 dark:hover:border-primary-400/60 transition-colors p-6"
             >
               <div className="text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-2">
