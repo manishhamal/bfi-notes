@@ -90,6 +90,11 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
+    if (!user) {
+      toast.error('You must be logged in to save articles.');
+      return;
+    }
+
     if (!formData.title || !formData.content) {
       toast.error('English Title and Content are required!');
       return;
@@ -99,8 +104,8 @@ export default function Editor() {
     // Parse tags safely
     const parsedTags = formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
 
-    const payload = {
-      author_id: user!.id,
+    const payload: any = {
+      author_id: user.id,
       title: formData.title,
       title_ne: formData.title_ne,
       category: formData.category,
@@ -116,22 +121,23 @@ export default function Editor() {
       author_bio: formData.author_bio || null,
       author_avatar: formData.author_avatar || null,
       year: formData.year || null,
-      date: new Date().toISOString()
     };
 
     let error;
     if (id) {
-      const res = await supabase.from('articles').update(payload).eq('id', id);
-      error = res.error;
+      const { error: updateError } = await supabase.from('articles').update(payload).eq('id', id);
+      error = updateError;
     } else {
-      const res = await supabase.from('articles').insert([payload]);
-      error = res.error;
+      // Only set initial creation date on first publish
+      payload.date = new Date().toISOString();
+      const { error: insertError } = await supabase.from('articles').insert([payload]);
+      error = insertError;
     }
 
     setLoading(false);
     if (error) {
-      toast.error('Failed to save article.');
-      console.error(error);
+      toast.error(`Failed to save: ${error.message}`);
+      console.error('Supabase Error:', error);
     } else {
       toast.success(id ? 'Article updated!' : 'Article published!');
       navigate('/admin');
