@@ -167,113 +167,113 @@ const Articles: React.FC = () => {
         )}
 
         <div className="mb-12">
-          <div className="relative bg-slate-100 dark:bg-slate-900/50 flex items-center h-12 text-[10px] md:text-xs font-bold uppercase tracking-widest border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-            {/* BFI Notes Logo - Always Visible */}
-            <button 
-              onClick={() => handleCategoryChange(Category.All)}
-              className={`flex-shrink-0 h-full px-4 md:px-8 flex items-center transition-colors border-r border-slate-200 dark:border-slate-800 whitespace-nowrap z-20 ${
-                activeCategory === Category.All 
-                  ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400' 
-                  : 'text-slate-900 dark:text-white hover:bg-slate-200/30 dark:hover:bg-slate-800/30'
-              }`}
-            >
-              BFI Notes
-            </button>
+          {activeCategory === Category.All ? (
+            <div className="relative bg-slate-100 dark:bg-slate-900/50 flex items-center h-12 text-[10px] md:text-xs font-bold uppercase tracking-widest border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+              {/* BFI Notes Logo - Always Visible */}
+              <button 
+                onClick={() => handleCategoryChange(Category.All)}
+                className="flex-shrink-0 h-full px-4 md:px-8 flex items-center transition-colors border-r border-slate-200 dark:border-slate-800 whitespace-nowrap z-20 bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400"
+              >
+                BFI Notes
+              </button>
 
-            {/* Category Tabs - Hidden on mobile when search is open */}
-            <div 
-              ref={scrollRef}
-              onMouseDown={handleMouseDown}
-              onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              className={`flex-1 min-w-0 flex items-center h-full overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain cursor-grab active:cursor-grabbing select-none transition-opacity duration-200 ${isDragging ? 'scroll-auto' : 'scroll-smooth'} ${isSearchOpen ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}
-            >
-              {Object.values(Category).filter(cat => cat !== Category.All).map((cat) => {
-                // Smart Search Highlight for Categories
-                const isMatchedBySearch = searchQuery.trim() && cat.toLowerCase().includes(searchQuery.toLowerCase().trim());
-                
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => !hasMoved && handleCategoryChange(cat)}
-                    className={`flex-shrink-0 h-full px-4 md:px-8 whitespace-nowrap transition-all border-r border-slate-200 dark:border-slate-800 last:border-r-0 active:scale-95 flex items-center gap-2 ${
-                      activeCategory === cat
-                        ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400'
-                        : isMatchedBySearch
+              {/* Category Tabs - Hidden on mobile when search is open */}
+              <div 
+                ref={scrollRef}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+                className={`flex-1 min-w-0 flex items-center h-full overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain cursor-grab active:cursor-grabbing select-none transition-opacity duration-200 ${isDragging ? 'scroll-auto' : 'scroll-smooth'} ${isSearchOpen ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}
+              >
+                {Object.values(Category).filter(cat => cat !== Category.All).map((cat) => {
+                  const isMatchedBySearch = searchQuery.trim() && cat.toLowerCase().includes(searchQuery.toLowerCase().trim());
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => !hasMoved && handleCategoryChange(cat)}
+                      className={`flex-shrink-0 h-full px-4 md:px-8 whitespace-nowrap transition-all border-r border-slate-200 dark:border-slate-800 last:border-r-0 active:scale-95 flex items-center gap-2 ${
+                        isMatchedBySearch
                           ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
                           : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    {cat}
-                    {isMatchedBySearch && <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Search Section */}
-            <div className="flex-shrink-0 h-full flex items-center z-30">
-              {/* Desktop Search - Always Visible */}
-              <div className="hidden md:flex items-center px-6 border-l border-slate-200 dark:border-slate-800 gap-3 h-full bg-white/50 dark:bg-black/20">
-                <Search size={14} className="text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search everything..."
-                  value={searchQuery}
-                  onKeyDown={handleSearchKeyDown}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none focus:outline-none text-xs w-40 placeholder:text-slate-400 font-medium normal-case tracking-normal"
-                />
+                      }`}
+                    >
+                      {cat}
+                      {isMatchedBySearch && <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Mobile Search Toggle */}
-              <div className="md:hidden flex items-center h-full">
-                <AnimatePresence mode="wait">
-                  {!isSearchOpen ? (
-                    <motion.button
-                      key="search-icon"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={() => setIsSearchOpen(true)}
-                      className="h-full px-5 flex items-center border-l border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white"
-                    >
-                      <Search size={16} />
-                    </motion.button>
-                  ) : (
-                    <motion.div
-                      key="search-expanded"
-                      initial={{ width: 0, opacity: 0 }}
-                      animate={{ width: 'auto', opacity: 1 }}
-                      exit={{ width: 0, opacity: 0 }}
-                      className="absolute inset-y-0 right-0 left-[100px] bg-slate-100 dark:bg-slate-900 flex items-center px-4 gap-3 z-40 border-l border-slate-200 dark:border-slate-800"
-                    >
-                      <Search size={14} className="text-slate-400 flex-shrink-0" />
-                      <input
-                        ref={searchInputRef}
-                        type="text"
-                        placeholder="Search everything..."
-                        value={searchQuery}
-                        onKeyDown={handleSearchKeyDown}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="flex-1 bg-transparent border-none focus:outline-none text-[10px] placeholder:text-slate-400 font-medium normal-case tracking-normal"
-                      />
-                      <button 
-                        onClick={() => {
-                          setIsSearchOpen(false);
-                          setSearchQuery('');
-                        }}
-                        className="p-1 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              {/* Search Section */}
+              <div className="flex-shrink-0 h-full flex items-center z-30">
+                <div className="hidden md:flex items-center px-6 border-l border-slate-200 dark:border-slate-800 gap-3 h-full bg-white/50 dark:bg-black/20">
+                  <Search size={14} className="text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search every subject..."
+                    value={searchQuery}
+                    onKeyDown={handleSearchKeyDown}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-transparent border-none focus:outline-none text-xs w-40 placeholder:text-slate-400 font-medium normal-case tracking-normal"
+                  />
+                </div>
+                <div className="md:hidden flex items-center h-full">
+                  <AnimatePresence mode="wait">
+                    {!isSearchOpen ? (
+                      <motion.button
+                        key="search-icon"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={() => setIsSearchOpen(true)}
+                        className="h-full px-5 flex items-center border-l border-slate-200 dark:border-slate-800 text-slate-500"
                       >
-                        <X size={16} />
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        <Search size={16} />
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        key="search-expanded"
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: 'auto', opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        className="absolute inset-y-0 right-0 left-[100px] bg-slate-100 dark:bg-slate-900 flex items-center px-4 gap-3 z-40 border-l border-slate-200 dark:border-slate-800"
+                      >
+                        <Search size={14} className="text-slate-400 flex-shrink-0" />
+                        <input
+                          ref={searchInputRef}
+                          type="text"
+                          placeholder="Search..."
+                          value={searchQuery}
+                          onKeyDown={handleSearchKeyDown}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="flex-1 bg-transparent border-none focus:outline-none text-[10px] placeholder:text-slate-400 font-medium normal-case tracking-normal"
+                        />
+                        <button onClick={() => {setIsSearchOpen(false); setSearchQuery('');}} className="p-1 text-slate-400">
+                          <X size={16} />
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Dedicated Subject Search Bar - Clean & Minimal */
+            <div className="relative group animate-in fade-in slide-in-from-top-4 duration-700">
+               <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-500 transition-colors">
+                 <Search size={20} />
+               </div>
+               <input
+                 type="text"
+                 placeholder={`Search in ${activeCategory}...`}
+                 value={searchQuery}
+                 onKeyDown={handleSearchKeyDown}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+                 className="w-full bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl py-5 pl-16 pr-6 text-lg font-medium placeholder:text-slate-400 focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all shadow-sm"
+               />
+            </div>
+          )}
         </div>
 
         {/* Bank/Level filter info (for Solutions) */}
