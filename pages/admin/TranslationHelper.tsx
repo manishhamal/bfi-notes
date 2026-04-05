@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, X, Languages, Info, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { marked } from 'marked';
 
 export default function TranslationHelper() {
   const [content, setContent] = useState('');
@@ -92,7 +93,28 @@ export default function TranslationHelper() {
            <div 
             id="translated-content-area"
             className="prose prose-lg dark:prose-invert professional-doc max-w-none transition-all duration-300"
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ 
+              __html: (() => {
+                let html = content;
+                if (!html) return '';
+                
+                // If content has literal markdown syntax hanging around, parse it
+                if (html.includes('### ') || html.includes('**')) {
+                  let unescaped = html;
+                  // Remove Tiptap or copy/paste wrappers that break markdown block parsing
+                  unescaped = unescaped.replace(/<pre[^>]*>/gi, '\n\n').replace(/<\/pre>/gi, '\n\n');
+                  unescaped = unescaped.replace(/<code[^>]*>/gi, '').replace(/<\/code>/gi, '');
+                  unescaped = unescaped.replace(/<p[^>]*>/gi, '\n\n').replace(/<\/p>/gi, '\n\n');
+                  unescaped = unescaped.replace(/<br\s*\/?>/gi, '\n');
+                  unescaped = unescaped.replace(/&nbsp;/g, ' ');
+                  // Unescape HTML entities that tiptap might have encoded
+                  unescaped = unescaped.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                  return marked.parse(unescaped) as string;
+                }
+                
+                return html;
+              })() 
+            }}
            />
         </div>
       </div>

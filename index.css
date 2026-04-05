@@ -146,23 +146,7 @@
       0 10px 36px -12px rgba(91, 70, 54, 0.15);
   }
 
-  .document-columns {
-    column-count: 2;
-    column-gap: 3rem; /* gap-12 */
-    column-rule: 1px solid rgba(0, 0, 0, 0.05);
-    orphans: 3;
-    widows: 3;
-  }
 
-  .dark .document-columns {
-    column-rule-color: rgba(255,255,255,0.05);
-  }
-
-  @media (max-width: 1024px) {
-    .document-columns {
-      column-count: 1;
-    }
-  }
 
   .professional-doc {
     text-align: justify;
@@ -303,4 +287,20 @@
   .prose em, .tiptap em {
     font-style: italic;
   }
+
+  /* Prevent preformatted text and code from overflowing */
+  .prose pre, .tiptap pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .prose code, .tiptap code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
 }
+

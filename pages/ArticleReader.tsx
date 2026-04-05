@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'react-toastify';
 import FadeIn from '../components/FadeIn';
 import { supabase } from '../lib/supabase';
+import { marked } from 'marked';
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
@@ -383,7 +384,6 @@ const ArticleReader: React.FC = () => {
               className={[
                 'document-paper mb-12',
                 theme === 'sepia' ? 'document-paper-sepia' : '',
-                fontSize > 22 ? '' : 'document-columns',
                 'professional-doc',
               ]
                 .filter(Boolean)
@@ -399,7 +399,28 @@ const ArticleReader: React.FC = () => {
                   prose-li:mb-2
                   [&_mark]:px-1 [&_mark]:rounded-sm`}
                 style={{ fontSize: `${fontSize}px` }}
-                dangerouslySetInnerHTML={{ __html: currentLanguage === 'en' ? article.content : (article.content_ne || article.content) }}
+                dangerouslySetInnerHTML={{ 
+                  __html: (() => {
+                    let html = currentLanguage === 'en' ? article.content : (article.content_ne || article.content);
+                    if (!html) return '';
+                    
+                    // If content has literal markdown syntax hanging around, parse it
+                    if (html.includes('### ') || html.includes('**')) {
+                      let unescaped = html;
+                      // Remove Tiptap or copy/paste wrappers that break markdown block parsing
+                      unescaped = unescaped.replace(/<pre[^>]*>/gi, '\n\n').replace(/<\/pre>/gi, '\n\n');
+                      unescaped = unescaped.replace(/<code[^>]*>/gi, '').replace(/<\/code>/gi, '');
+                      unescaped = unescaped.replace(/<p[^>]*>/gi, '\n\n').replace(/<\/p>/gi, '\n\n');
+                      unescaped = unescaped.replace(/<br\s*\/?>/gi, '\n');
+                      unescaped = unescaped.replace(/&nbsp;/g, ' ');
+                      // Unescape HTML entities that tiptap might have encoded
+                      unescaped = unescaped.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                      return marked.parse(unescaped) as string;
+                    }
+                    
+                    return html;
+                  })() as string
+                }}
               />
             </div>
           </FadeIn>

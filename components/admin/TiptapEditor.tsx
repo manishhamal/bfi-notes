@@ -20,6 +20,7 @@ import {
   Table as TableIcon, Undo, Redo, Quote, Code, ChevronDown,
   AlignJustify, Indent as IndentIcon, Outdent as OutdentIcon
 } from 'lucide-react';
+import { Markdown } from 'tiptap-markdown';
 
 // Custom font size extension
 const FontSize = Extension.create({
@@ -239,6 +240,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       TableRow,
       TableHeader,
       TableCell,
+      Markdown,
     ],
     content: content,
     onUpdate: ({ editor }) => {
