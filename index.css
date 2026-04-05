@@ -100,8 +100,8 @@
   }
 
   .document-paper {
-    background-color: #fafafa;
-    color: #0f172a;
+    background-color: #ffffff;
+    color: #0f172a !important; /* Force deep slate for readability */
     box-shadow:
       0 1px 2px rgba(15, 23, 42, 0.04),
       0 10px 40px -10px rgba(0, 0, 0, 0.12),
@@ -132,18 +132,22 @@
   }
 
   /* Dark mode: prevent TipTap inline ink colors from going invisible */
-  .dark .document-paper :where(p, li, blockquote p, span) {
-    color: inherit !important;
+  .dark .document-paper :where(p, li, blockquote p, span, div) {
+    color: #e2e8f0 !important;
   }
 
   /* Sepia reader: warm paper inside the sheet */
   .document-paper.document-paper-sepia {
     background-color: #f0e6d2;
-    color: #5b4636;
+    color: #433422 !important; /* Darker sepia ink for better contrast */
     border-color: rgba(91, 70, 54, 0.12);
     box-shadow:
       0 1px 2px rgba(91, 70, 54, 0.06),
       0 10px 36px -12px rgba(91, 70, 54, 0.15);
+  }
+
+  .document-paper.document-paper-sepia :where(p, li, span, h1, h2, h3) {
+    color: #433422 !important;
   }
 
 
@@ -174,9 +178,10 @@
   .professional-doc.tiptap p {
     text-align: justify !important;
     text-justify: inter-word;
-    line-height: 1.55 !important;
+    line-height: 1.6 !important;
     break-inside: avoid-column; /* Prevent paragraphs from being split awkwardly */
     margin-bottom: 1.5rem;
+    color: #1e293b !important; /* Force readable slate in light mode */
   }
 
   .professional-doc strong,
