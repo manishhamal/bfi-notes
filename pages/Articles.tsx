@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Search, X, FileText } from 'lucide-react';
+import { Search, X, FileText, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ArticleCard from '../components/ArticleCard';
 import FadeIn from '../components/FadeIn';
@@ -151,6 +151,21 @@ const Articles: React.FC = () => {
   return (
     <div className="pb-24">
       <FadeIn>
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-fit shadow-sm"
+        >
+          <ArrowLeft size={16} />
+          Go Back
+        </button>
+
+        {activeCategory !== Category.All && (
+          <div className="mb-6 animate-in fade-in slide-in-from-left-4 duration-500">
+             <div className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] mb-1">Subject Collection</div>
+             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{activeCategory}</h1>
+          </div>
+        )}
+
         <div className="mb-12">
           <div className="relative bg-slate-100 dark:bg-slate-900/50 flex items-center h-12 text-[10px] md:text-xs font-bold uppercase tracking-widest border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
             {/* BFI Notes Logo - Always Visible */}
