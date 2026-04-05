@@ -43,10 +43,10 @@ const Home: React.FC = () => {
 
           <div className="flex flex-wrap gap-4 pt-4">
             <Link 
-              to="/articles" 
-              className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all flex items-center gap-2"
+              to="/materials" 
+              className="px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all flex items-center gap-3 shadow-xl shadow-primary-500/10 active:scale-95"
             >
-              All Materials <ArrowRight size={18} />
+              All Materials <ArrowRight size={20} />
             </Link>
           </div>
         </div>

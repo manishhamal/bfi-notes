@@ -14,11 +14,13 @@ export default function Editor() {
 
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     title_ne: '',
     category: searchParams.get('category') || 'Banking',
+    bank: '',
+    level: '',
     read_time: '10 min read',
     tags: '',
     excerpt: '',
@@ -42,6 +44,8 @@ export default function Editor() {
         title: data.title || '',
         title_ne: data.title_ne || '',
         category: data.category || 'Banking',
+        bank: data.bank || '',
+        level: data.level || '',
         read_time: data.read_time || '',
         tags: (data.tags || []).join(', '),
         excerpt: data.excerpt || '',
@@ -98,6 +102,8 @@ export default function Editor() {
       title: formData.title,
       title_ne: formData.title_ne,
       category: formData.category,
+      bank: formData.bank || null,
+      level: formData.level || null,
       read_time: formData.read_time,
       tags: parsedTags,
       excerpt: formData.excerpt,
@@ -187,8 +193,32 @@ export default function Editor() {
                  <option value="Account">Account</option>
                  <option value="Economic">Economic</option>
                  <option value="Maths">Maths</option>
+                 <option value="Computer">Computer</option>
                </select>
             </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Bank (Optional)</label>
+                 <select name="bank" value={formData.bank} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm">
+                   <option value="">Any</option>
+                   <option value="NRB">NRB</option>
+                   <option value="RBB">RBB</option>
+                   <option value="NBL">NBL</option>
+                   <option value="ADBL">ADBL</option>
+                 </select>
+              </div>
+              <div>
+                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Level (Optional)</label>
+                 <select name="level" value={formData.level} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm">
+                   <option value="">Any</option>
+                   <option value="4th Level">4th Level</option>
+                   <option value="5th Level">5th Level</option>
+                   <option value="6th Level">6th Level</option>
+                 </select>
+              </div>
+            </div>
+
              <div>
                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tags (comma separated)</label>
                <input name="tags" value={formData.tags} onChange={handleChange} className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none" placeholder="NepalRastraBank, Act2058" />

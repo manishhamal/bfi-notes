@@ -25,7 +25,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
 export default function SyllabusReader() {
-  const { category } = useParams<{ category: string }>();
+  const { bank, level } = useParams<{ bank: string; level: string }>();
   const navigate = useNavigate();
   
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -35,11 +35,16 @@ export default function SyllabusReader() {
 
   useEffect(() => {
     const fetchSyllabus = async () => {
-      if (!category) return;
+      if (!bank || !level) return;
+      
+      const decodedBank = decodeURIComponent(bank);
+      const decodedLevel = decodeURIComponent(level);
+
       const { data, error } = await supabase
         .from('syllabuses')
         .select('pdf_url')
-        .eq('category', category)
+        .eq('bank', decodedBank)
+        .eq('level', decodedLevel)
         .single();
       
       if (data && !error && data.pdf_url) {
@@ -48,7 +53,7 @@ export default function SyllabusReader() {
       setLoading(false);
     };
     fetchSyllabus();
-  }, [category]);
+  }, [bank, level]);
   
   const [theme, setTheme] = useState<ReaderTheme>('light');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -149,7 +154,7 @@ export default function SyllabusReader() {
         </div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Syllabus Not Found</h1>
         <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md">
-          A syllabus for {category} has not been uploaded yet. Please check back later or contact the administrator.
+          A syllabus for {bank} {level} has not been uploaded yet. Please check back later or contact the administrator.
         </p>
         <button 
           onClick={() => navigate(-1)} 
@@ -181,7 +186,7 @@ export default function SyllabusReader() {
         animate={{ y: showHeader ? 0 : -100 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="max-w-[70%] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate(-1)}>
               <div className={`p-2 rounded-full transition-colors ${
@@ -193,10 +198,10 @@ export default function SyllabusReader() {
               </div>
               <div className="hidden sm:flex flex-col">
                  <span className={`text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>
-                   Subject
+                   Bank
                  </span>
                  <span className="font-bold tracking-tight -mt-0.5">
-                   {category}
+                   {bank} {level}
                  </span>
               </div>
             </div>
@@ -302,12 +307,12 @@ export default function SyllabusReader() {
         onClick={() => isMenuOpen && setIsMenuOpen(false)}
       >
         <div className="min-h-full py-8 md:py-16 px-4 sm:px-6 flex justify-center">
-          <FadeIn className="w-full max-w-[70%]">
+          <FadeIn className="w-full max-w-4xl mx-auto">
             
             {/* Context Breadcrumb */}
             <div className="flex items-center gap-2 mb-8 justify-center">
                <span className={`text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-primary-400' : 'text-primary-600'}`}>
-                 {category}
+                 {bank} {level}
                </span>
                <ChevronRight size={14} className={theme === 'dark' ? 'text-slate-600' : 'text-slate-400'} />
                <span className={`text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>

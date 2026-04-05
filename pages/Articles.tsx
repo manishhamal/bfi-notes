@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Search, X, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ArticleCard from '../components/ArticleCard';
 import FadeIn from '../components/FadeIn';
@@ -11,6 +11,8 @@ const Articles: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
+  const bankParam = searchParams.get('bank');
+  const levelParam = searchParams.get('level');
   
   const [activeCategory, setActiveCategory] = useState<string>(categoryParam || Category.All);
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +31,7 @@ const Articles: React.FC = () => {
     const fetchArticles = async () => {
       const { data, error } = await supabase
         .from('articles')
-        .select(`id, title, title_ne, category, excerpt, excerpt_ne, tags, date, read_time, author_name, author_avatar, views`)
+        .select(`id, title, title_ne, category, bank, level, excerpt, excerpt_ne, tags, date, read_time, author_name, author_avatar, views`)
         .order('date', { ascending: false });
 
       if (!error && data) {
@@ -63,6 +65,8 @@ const Articles: React.FC = () => {
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
       const matchesCategory = activeCategory === Category.All || article.category === activeCategory;
+      const matchesBank = !bankParam || article.bank === bankParam;
+      const matchesLevel = !levelParam || article.level === levelParam;
       
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch = 
@@ -72,9 +76,9 @@ const Articles: React.FC = () => {
         (article.authorName?.toLowerCase().includes(searchLower)) ||
         (article.tags || []).some((tag: string) => tag.toLowerCase().includes(searchLower));
         
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesBank && matchesLevel && matchesSearch;
     });
-  }, [activeCategory, searchQuery, articles]);
+  }, [activeCategory, bankParam, levelParam, searchQuery, articles]);
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);
@@ -256,6 +260,39 @@ const Articles: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Bank/Level filter info (for Solutions) */}
+        {(bankParam || levelParam) && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 bg-primary-100 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/40 rounded-3xl flex flex-wrap items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                <FileText size={20} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">
+                  Showing Solutions For
+                </h3>
+                <div className="text-lg font-bold text-slate-900 dark:text-white leading-none">
+                  {[bankParam, levelParam].filter(Boolean).join(' • ')}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                searchParams.delete('bank');
+                searchParams.delete('level');
+                setSearchParams(searchParams);
+              }}
+              className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition-colors bg-white dark:bg-slate-900 px-4 py-2 rounded-full shadow-sm"
+            >
+              Clear Filter
+            </button>
+          </motion.div>
+        )}
       </FadeIn>
 
       <FadeIn>

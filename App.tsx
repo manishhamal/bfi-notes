@@ -7,15 +7,21 @@ import ArticleReader from './pages/ArticleReader';
 import About from './pages/About';
 import Authors from './pages/Authors';
 import SubjectCategoryHub from './pages/subjects/SubjectCategoryHub';
-import SubjectKindTopics from './pages/subjects/SubjectKindTopics';
-import SubjectKindList from './pages/subjects/SubjectKindList';
 import { AuthProvider } from './components/AuthProvider';
 import Login from './pages/Login';
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Editor from './pages/admin/Editor';
 import TranslationHelper from './pages/admin/TranslationHelper';
+
+// New Bank/Level Restructuring
+import SyllabusSelector from './pages/SyllabusSelector';
 import SyllabusReader from './pages/SyllabusReader';
+import OldQuestionsSelector from './pages/OldQuestionsSelector';
+import OldQuestionsArchive from './pages/OldQuestionsArchive';
+import OldQuestionsReader from './pages/OldQuestionsReader';
+import SolutionsSelector from './pages/SolutionsSelector';
+import MaterialsHub from './pages/MaterialsHub';
 
 const App: React.FC = () => {
   return (
@@ -29,14 +35,28 @@ const App: React.FC = () => {
             <Route path="authors" element={<Authors />} />
             <Route path="about" element={<About />} />
             <Route path="subjects/:category" element={<SubjectCategoryHub />} />
-            <Route path="subjects/:category/:kind" element={<SubjectKindTopics />} />
-            <Route path="subjects/:category/:kind/:topic" element={<SubjectKindList />} />
+            
+            {/* New Taxonomy Selectors */}
+            <Route path="syllabus" element={<SyllabusSelector />} />
+            <Route path="old-questions" element={<OldQuestionsSelector />} />
+            <Route path="solutions" element={<SolutionsSelector />} />
+            <Route path="materials" element={<MaterialsHub />} />
           </Route>
+          
           <Route path="articles/:id" element={<ArticleReader />} />
-          <Route path="subjects/:category/syllabus/view" element={<SyllabusReader />} />
+          
+          {/* Readers & Archives */}
+          <Route path="syllabus/:bank/:level/view" element={<SyllabusReader />} />
+          <Route path="old-questions/:bank/:level" element={<OldQuestionsArchive />} />
+          <Route path="old-questions/:bank/:level/:id/view" element={<OldQuestionsReader />} />
           
           {/* Login */}
           <Route path="login" element={<Login />} />
+
+          {/* Legacy Redirects for old bookmarks/cache */}
+          <Route path="subjects/:category/syllabus/view" element={<SyllabusSelector />} />
+          <Route path="subjects/:category/old-questions" element={<OldQuestionsSelector />} />
+          <Route path="subjects/:category/old-solutions" element={<SolutionsSelector />} />
 
           {/* Protected Admin routes */}
           <Route path="admin" element={<AdminLayout />}>

@@ -8,6 +8,12 @@ export enum Category {
   All = 'All'
 }
 
+export const BANKS = ['NRB', 'RBB', 'NBL', 'ADBL'] as const;
+export type Bank = typeof BANKS[number];
+
+export const LEVELS = ['4th Level', '5th Level', '6th Level'] as const;
+export type Level = typeof LEVELS[number];
+
 export interface Author {
   name: string;
   role: string;
