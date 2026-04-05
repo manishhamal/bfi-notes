@@ -4,6 +4,19 @@ drop table if exists public.articles cascade;
 drop table if exists public.syllabuses cascade;
 drop table if exists public.old_questions cascade;
 
+-- 0.1 Create Profiles Table (RBAC)
+create table public.profiles (
+  id uuid references auth.users on delete cascade not null primary key,
+  full_name text,
+  role text default 'author' check (role in ('admin', 'author')),
+  avatar_url text,
+  updated_at timestamp with time zone default now()
+);
+
+alter table public.profiles enable row level security;
+create policy "Profiles are viewable by everyone" on public.profiles for select using (true);
+create policy "Users can update their own profile" on public.profiles for update using (auth.uid() = id);
+
 -- 1. Create Articles Table
 create table public.articles (
   id uuid not null default gen_random_uuid() primary key,
@@ -76,9 +89,15 @@ create table public.syllabuses (
 
 alter table public.syllabuses enable row level security;
 create policy "Syllabuses are viewable by everyone." on public.syllabuses for select using (true);
-create policy "Authenticated can insert syllabuses." on public.syllabuses for insert to authenticated with check (true);
-create policy "Authenticated can update syllabuses." on public.syllabuses for update to authenticated using (true);
-create policy "Authenticated can delete syllabuses." on public.syllabuses for delete to authenticated using (true);
+create policy "Admins can insert syllabuses." on public.syllabuses for insert to authenticated with check (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can update syllabuses." on public.syllabuses for update to authenticated using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can delete syllabuses." on public.syllabuses for delete to authenticated using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
 
 -- 4.1 Old Questions Table
 create table public.old_questions (
@@ -92,9 +111,15 @@ create table public.old_questions (
 
 alter table public.old_questions enable row level security;
 create policy "Old questions are viewable by everyone." on public.old_questions for select using (true);
-create policy "Authenticated can insert old_questions." on public.old_questions for insert to authenticated with check (true);
-create policy "Authenticated can update old_questions." on public.old_questions for update to authenticated using (true);
-create policy "Authenticated can delete old_questions." on public.old_questions for delete to authenticated using (true);
+create policy "Admins can insert old_questions." on public.old_questions for insert to authenticated with check (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can update old_questions." on public.old_questions for update to authenticated using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can delete old_questions." on public.old_questions for delete to authenticated using (
+  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
 
 
 -- 5. Storage Buckets for PDFs
@@ -102,22 +127,34 @@ insert into storage.buckets (id, name, public) values ('syllabuses', 'syllabuses
 insert into storage.buckets (id, name, public) values ('old-questions', 'old-questions', true) ON CONFLICT DO NOTHING;
 
 drop policy if exists "Public can view syllabuses" on storage.objects;
-drop policy if exists "Authenticated can upload syllabuses" on storage.objects;
-drop policy if exists "Authenticated can update syllabuses" on storage.objects;
-drop policy if exists "Authenticated can delete syllabuses" on storage.objects;
+drop policy if exists "Admins can upload syllabuses" on storage.objects;
+drop policy if exists "Admins can update syllabuses" on storage.objects;
+drop policy if exists "Admins can delete syllabuses" on storage.objects;
 
 create policy "Public can view syllabuses" on storage.objects for select using (bucket_id = 'syllabuses');
-create policy "Authenticated can upload syllabuses" on storage.objects for insert to authenticated with check (bucket_id = 'syllabuses');
-create policy "Authenticated can update syllabuses" on storage.objects for update to authenticated using (bucket_id = 'syllabuses');
-create policy "Authenticated can delete syllabuses" on storage.objects for delete to authenticated using (bucket_id = 'syllabuses');
+create policy "Admins can upload syllabuses" on storage.objects for insert to authenticated with check (
+  bucket_id = 'syllabuses' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can update syllabuses" on storage.objects for update to authenticated using (
+  bucket_id = 'syllabuses' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can delete syllabuses" on storage.objects for delete to authenticated using (
+  bucket_id = 'syllabuses' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
 
 drop policy if exists "Public can view old-questions" on storage.objects;
-drop policy if exists "Authenticated can upload old-questions" on storage.objects;
-drop policy if exists "Authenticated can update old-questions" on storage.objects;
-drop policy if exists "Authenticated can delete old-questions" on storage.objects;
+drop policy if exists "Admins can upload old-questions" on storage.objects;
+drop policy if exists "Admins can update old-questions" on storage.objects;
+drop policy if exists "Admins can delete old-questions" on storage.objects;
 
 create policy "Public can view old-questions" on storage.objects for select using (bucket_id = 'old-questions');
-create policy "Authenticated can upload old-questions" on storage.objects for insert to authenticated with check (bucket_id = 'old-questions');
-create policy "Authenticated can update old-questions" on storage.objects for update to authenticated using (bucket_id = 'old-questions');
-create policy "Authenticated can delete old-questions" on storage.objects for delete to authenticated using (bucket_id = 'old-questions');
+create policy "Admins can upload old-questions" on storage.objects for insert to authenticated with check (
+  bucket_id = 'old-questions' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can update old-questions" on storage.objects for update to authenticated using (
+  bucket_id = 'old-questions' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
+create policy "Admins can delete old-questions" on storage.objects for delete to authenticated using (
+  bucket_id = 'old-questions' and exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+);
 

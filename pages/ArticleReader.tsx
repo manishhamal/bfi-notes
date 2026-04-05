@@ -20,6 +20,7 @@ import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
@@ -405,7 +406,7 @@ const ArticleReader: React.FC = () => {
                   [&_mark]:px-1 [&_mark]:rounded-sm`}
                 style={{ fontSize: `${fontSize}px` }}
                 dangerouslySetInnerHTML={{ 
-                  __html: (() => {
+                  __html: DOMPurify.sanitize((() => {
                     let html = currentLanguage === 'en' ? article.content : (article.content_ne || article.content);
                     if (!html) return '';
                     
@@ -424,7 +425,7 @@ const ArticleReader: React.FC = () => {
                     }
                     
                     return html;
-                  })() as string
+                  })() as string)
                 }}
               />
             </div>

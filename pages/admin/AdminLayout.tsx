@@ -11,7 +11,13 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
+  
+  // Strict RBAC check: Must be logged in AND have a valid role in the profiles table
+  const isAuthorized = user && (profile?.role === 'admin' || profile?.role === 'author');
+  
+  if (!isAuthorized) {
+    return <Navigate to="/login" replace />;
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
