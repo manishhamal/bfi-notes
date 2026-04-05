@@ -188,7 +188,7 @@ export default function SyllabusReader() {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(-1)}>
+            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(`/syllabus/${encodeURIComponent(bank!)}`)}>
               <div className="flex items-center gap-2 text-sm font-bold text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm">
                 <ArrowLeft size={16} />
                 <span>Go Back</span>

@@ -38,9 +38,9 @@ const App: React.FC = () => {
             <Route path="subjects/:category" element={<SubjectCategoryHub />} />
             
             {/* New Taxonomy Selectors */}
-            <Route path="syllabus" element={<SyllabusSelector />} />
-            <Route path="old-questions" element={<OldQuestionsSelector />} />
-            <Route path="solutions" element={<SolutionsSelector />} />
+            <Route path="syllabus/:bank?" element={<SyllabusSelector />} />
+            <Route path="old-questions/:bank?" element={<OldQuestionsSelector />} />
+            <Route path="solutions/:bank?" element={<SolutionsSelector />} />
             <Route path="materials" element={<MaterialsHub />} />
           </Route>
           

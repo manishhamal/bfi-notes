@@ -1,13 +1,13 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BankLevelSelector from '../components/BankLevelSelector';
 import { Bank, Level } from '../types';
 
 export default function OldQuestionsSelector() {
   const navigate = useNavigate();
+  const { bank } = useParams<{ bank: string }>();
 
-  const handleSelect = (bank: Bank, level: Level) => {
-    navigate(`/old-questions/${encodeURIComponent(bank)}/${encodeURIComponent(level)}`);
+  const handleSelect = (selectedBank: Bank, level: Level) => {
+    navigate(`/old-questions/${encodeURIComponent(selectedBank)}/${encodeURIComponent(level)}`);
   };
 
   return (
@@ -16,6 +16,7 @@ export default function OldQuestionsSelector() {
       subtitle="Past paper collections organized by bank and level. Select one to proceed."
       baseRoute="/old-questions"
       onSelect={handleSelect}
+      initialBank={bank}
     />
   );
 }

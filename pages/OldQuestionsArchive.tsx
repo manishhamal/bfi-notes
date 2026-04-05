@@ -43,7 +43,7 @@ export default function OldQuestionsArchive() {
         <FadeIn>
           <div className="mb-8">
             <button
-              onClick={() => navigate('/old-questions')}
+              onClick={() => navigate(`/old-questions/${encodeURIComponent(bank!)}`)}
               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-fit"
             >
               <ArrowLeft size={16} />

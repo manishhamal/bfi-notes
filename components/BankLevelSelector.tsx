@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BANKS, LEVELS, Bank, Level } from '../types';
 import FadeIn from './FadeIn';
@@ -9,15 +9,26 @@ interface BankLevelSelectorProps {
   subtitle: string;
   baseRoute: string; // e.g. '/syllabus', '/old-questions'
   onSelect?: (bank: Bank, level: Level) => void;
+  initialBank?: string;
 }
 
-export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect }: BankLevelSelectorProps) {
+export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect, initialBank }: BankLevelSelectorProps) {
   const navigate = useNavigate();
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
 
   const handleBankSelect = (bank: Bank) => {
     setSelectedBank(bank);
+    // Update URL without full navigation to allow back button to work per bank
+    window.history.pushState(null, '', `/#${baseRoute}/${encodeURIComponent(bank)}`);
   };
+
+  useEffect(() => {
+    if (initialBank && BANKS.includes(initialBank as Bank)) {
+      setSelectedBank(initialBank as Bank);
+    } else {
+      setSelectedBank(null);
+    }
+  }, [initialBank, baseRoute]);
 
   const handleLevelSelect = (level: Level) => {
     if (!selectedBank) return;
@@ -34,8 +45,15 @@ export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect
         <FadeIn>
           <div className="mb-8 md:mb-12 text-center md:text-left">
              <button
-                onClick={() => selectedBank ? setSelectedBank(null) : navigate(-1)}
-                className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 mx-auto md:mx-0 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full"
+                onClick={() => {
+                  if (selectedBank) {
+                    setSelectedBank(null);
+                    window.history.pushState(null, '', `/#${baseRoute}`);
+                  } else {
+                    navigate('/materials');
+                  }
+                }}
+                className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 mx-auto md:mx-0 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm"
              >
                 <ArrowLeft size={16} />
                 {selectedBank ? 'Back to Banks' : 'Go Back'}
