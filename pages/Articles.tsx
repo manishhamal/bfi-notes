@@ -13,10 +13,14 @@ const Articles: React.FC = () => {
   const categoryParam = searchParams.get('category');
   const bankParam = searchParams.get('bank');
   const levelParam = searchParams.get('level');
+  const viewParam = searchParams.get('view');
   
   const [activeCategory, setActiveCategory] = useState<string>(categoryParam || Category.All);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  const isDedicatedView = viewParam === 'collection' && activeCategory !== Category.All;
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -159,7 +163,7 @@ const Articles: React.FC = () => {
           Go Back
         </button>
 
-        {activeCategory !== Category.All && (
+        {isDedicatedView && (
           <div className="mb-6 animate-in fade-in slide-in-from-left-4 duration-500">
              <div className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] mb-1">Subject Collection</div>
              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{activeCategory}</h1>
@@ -167,12 +171,16 @@ const Articles: React.FC = () => {
         )}
 
         <div className="mb-12">
-          {activeCategory === Category.All ? (
+          {!isDedicatedView ? (
             <div className="relative bg-slate-100 dark:bg-slate-900/50 flex items-center h-12 text-[10px] md:text-xs font-bold uppercase tracking-widest border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
               {/* BFI Notes Logo - Always Visible */}
               <button 
                 onClick={() => handleCategoryChange(Category.All)}
-                className="flex-shrink-0 h-full px-4 md:px-8 flex items-center transition-colors border-r border-slate-200 dark:border-slate-800 whitespace-nowrap z-20 bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400"
+                className={`flex-shrink-0 h-full px-4 md:px-8 flex items-center transition-colors border-r border-slate-200 dark:border-slate-800 whitespace-nowrap z-20 ${
+                  activeCategory === Category.All 
+                    ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400' 
+                    : 'text-slate-900 dark:text-white hover:bg-slate-200/30 dark:hover:bg-slate-800/30'
+                }`}
               >
                 BFI Notes
               </button>
@@ -193,9 +201,11 @@ const Articles: React.FC = () => {
                       key={cat}
                       onClick={() => !hasMoved && handleCategoryChange(cat)}
                       className={`flex-shrink-0 h-full px-4 md:px-8 whitespace-nowrap transition-all border-r border-slate-200 dark:border-slate-800 last:border-r-0 active:scale-95 flex items-center gap-2 ${
-                        isMatchedBySearch
-                          ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                          : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
+                        activeCategory === cat
+                          ? 'bg-slate-200 dark:bg-slate-800 text-primary-600 dark:text-primary-400'
+                          : isMatchedBySearch
+                            ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                            : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       {cat}
@@ -227,7 +237,7 @@ const Articles: React.FC = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         onClick={() => setIsSearchOpen(true)}
-                        className="h-full px-5 flex items-center border-l border-slate-200 dark:border-slate-800 text-slate-500"
+                        className="h-full px-5 flex items-center border-l border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white"
                       >
                         <Search size={16} />
                       </motion.button>
@@ -249,7 +259,13 @@ const Articles: React.FC = () => {
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="flex-1 bg-transparent border-none focus:outline-none text-[10px] placeholder:text-slate-400 font-medium normal-case tracking-normal"
                         />
-                        <button onClick={() => {setIsSearchOpen(false); setSearchQuery('');}} className="p-1 text-slate-400">
+                        <button 
+                          onClick={() => {
+                            setIsSearchOpen(false);
+                            setSearchQuery('');
+                          }}
+                          className="p-1 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
                           <X size={16} />
                         </button>
                       </motion.div>
