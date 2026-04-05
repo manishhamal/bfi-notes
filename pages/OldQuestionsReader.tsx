@@ -161,8 +161,8 @@ export default function OldQuestionsReader() {
                     <Page 
                       pageNumber={index + 1} 
                       width={containerWidth ? containerWidth : undefined}
-                      renderTextLayer={true}
-                      renderAnnotationLayer={true}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
                     />
                   </div>
                 ))}

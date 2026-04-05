@@ -356,8 +356,8 @@ export default function SyllabusReader() {
                     <Page 
                       pageNumber={index + 1} 
                       width={containerWidth ? containerWidth : undefined}
-                      renderTextLayer={true}
-                      renderAnnotationLayer={true}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
                       loading={<div className="h-[800px] w-full bg-slate-50 animate-pulse flex items-center justify-center text-slate-300">Rendering...</div>}
                     />
                   </div>
