@@ -31,7 +31,8 @@ create table public.articles (
 
   -- New fields for Solutions / Bank specific notes
   bank text,
-  level text
+  level text,
+  year text
 );
 
 -- Articles RLS

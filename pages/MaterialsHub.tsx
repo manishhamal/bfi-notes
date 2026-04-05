@@ -59,17 +59,14 @@ const MaterialsHub: React.FC = () => {
               <button
                 key={section.id}
                 onClick={() => navigate(section.path)}
-                className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 transition-all hover:border-primary-500 hover:ring-4 hover:ring-primary-500/10 shadow-sm hover:shadow-xl hover:shadow-primary-500/5 overflow-hidden"
+                className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 transition-all hover:border-primary-500 hover:shadow-lg dark:hover:bg-slate-800/50 overflow-hidden"
               >
-                {/* Decorative Background Element */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-bl-[100%] -translate-y-8 translate-x-8 transition-transform group-hover:scale-150" />
-                
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/40 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
                     {section.icon}
                   </div>
-                  <div className="text-primary-600 dark:text-primary-400 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0 translate-x-4">
-                    <ArrowRight size={24} />
+                  <div className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-all">
+                    <ArrowRight size={20} />
                   </div>
                 </div>
 

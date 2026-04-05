@@ -30,7 +30,8 @@ export default function Editor() {
     featured_image: '',
     author_name: '',
     author_bio: '',
-    author_avatar: ''
+    author_avatar: '',
+    year: ''
   });
 
   useEffect(() => {
@@ -55,7 +56,8 @@ export default function Editor() {
         featured_image: data.featured_image || '',
         author_name: data.author_name || '',
         author_bio: data.author_bio || '',
-        author_avatar: data.author_avatar || ''
+        author_avatar: data.author_avatar || '',
+        year: data.year || ''
       });
     }
   };
@@ -113,6 +115,7 @@ export default function Editor() {
       author_name: formData.author_name || null,
       author_bio: formData.author_bio || null,
       author_avatar: formData.author_avatar || null,
+      year: formData.year || null,
       date: new Date().toISOString()
     };
 
@@ -216,6 +219,10 @@ export default function Editor() {
                    <option value="5th Level">5th Level</option>
                    <option value="6th Level">6th Level</option>
                  </select>
+              </div>
+              <div>
+                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Year (e.g. 2078)</label>
+                 <input name="year" value={formData.year} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm" placeholder="20XX" />
               </div>
             </div>
 

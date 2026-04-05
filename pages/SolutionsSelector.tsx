@@ -7,7 +7,7 @@ export default function SolutionsSelector() {
   const navigate = useNavigate();
 
   const handleSelect = (bank: Bank, level: Level) => {
-    navigate(`/articles?category=Banking&bank=${encodeURIComponent(bank)}&level=${encodeURIComponent(level)}`);
+    navigate(`/solutions/${encodeURIComponent(bank)}/${encodeURIComponent(level)}`);
   };
 
   return (

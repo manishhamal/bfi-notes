@@ -21,6 +21,7 @@ import OldQuestionsSelector from './pages/OldQuestionsSelector';
 import OldQuestionsArchive from './pages/OldQuestionsArchive';
 import OldQuestionsReader from './pages/OldQuestionsReader';
 import SolutionsSelector from './pages/SolutionsSelector';
+import SolutionsArchive from './pages/SolutionsArchive';
 import MaterialsHub from './pages/MaterialsHub';
 
 const App: React.FC = () => {
@@ -48,6 +49,7 @@ const App: React.FC = () => {
           {/* Readers & Archives */}
           <Route path="syllabus/:bank/:level/view" element={<SyllabusReader />} />
           <Route path="old-questions/:bank/:level" element={<OldQuestionsArchive />} />
+          <Route path="solutions/:bank/:level" element={<SolutionsArchive />} />
           <Route path="old-questions/:bank/:level/:id/view" element={<OldQuestionsReader />} />
           
           {/* Login */}

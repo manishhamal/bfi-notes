@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Category } from '../../types';
+import { BookOpen, FileText, ClipboardList, PenTool, ArrowRight } from 'lucide-react';
 
 type SubjectKind = 'syllabus' | 'old-questions' | 'notes' | 'old-solutions';
 
@@ -60,10 +61,15 @@ export default function SubjectCategoryHub() {
           <button
             type="button"
             onClick={() => navigate(`/syllabus`)}
-            className="group text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:border-primary-500/60 dark:hover:border-primary-400/60 transition-all p-8 shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
+            className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 transition-all hover:border-primary-500 hover:shadow-lg dark:hover:bg-slate-800/50 overflow-hidden"
           >
-            <div className="text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-3">
-              Section 01
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
+                <BookOpen size={24} />
+              </div>
+              <div className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-all">
+                <ArrowRight size={20} />
+              </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               Syllabus PDF
@@ -76,10 +82,15 @@ export default function SubjectCategoryHub() {
           <button
             type="button"
             onClick={() => navigate(`/articles?category=${encodeURIComponent(normalizedCategory)}`)}
-            className="group text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:border-primary-500/60 dark:hover:border-primary-400/60 transition-all p-8 shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
+            className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 transition-all hover:border-primary-500 hover:shadow-lg dark:hover:bg-slate-800/50 overflow-hidden"
           >
-            <div className="text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-3">
-              Section 02
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
+                <FileText size={24} />
+              </div>
+              <div className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-all">
+                <ArrowRight size={20} />
+              </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               Study Notes
@@ -92,10 +103,15 @@ export default function SubjectCategoryHub() {
           <button
             type="button"
             onClick={() => navigate(`/old-questions`)}
-            className="group text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:border-primary-500/60 dark:hover:border-primary-400/60 transition-all p-8 shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
+            className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 transition-all hover:border-primary-500 hover:shadow-lg dark:hover:bg-slate-800/50 overflow-hidden"
           >
-            <div className="text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-3">
-              Section 03
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
+                <ClipboardList size={24} />
+              </div>
+              <div className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-all">
+                <ArrowRight size={20} />
+              </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               Old Question Collections
@@ -108,10 +124,15 @@ export default function SubjectCategoryHub() {
           <button
             type="button"
             onClick={() => navigate(`/solutions`)}
-            className="group text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:border-primary-500/60 dark:hover:border-primary-400/60 transition-all p-8 shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
+            className="group relative flex flex-col text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 transition-all hover:border-primary-500 hover:shadow-lg dark:hover:bg-slate-800/50 overflow-hidden"
           >
-            <div className="text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-widest mb-3">
-              Section 04
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all">
+                <PenTool size={24} />
+              </div>
+              <div className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 transition-all">
+                <ArrowRight size={20} />
+              </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               Old Question Solutions
