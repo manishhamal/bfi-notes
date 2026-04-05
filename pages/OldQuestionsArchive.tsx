@@ -44,10 +44,10 @@ export default function OldQuestionsArchive() {
           <div className="mb-8">
             <button
               onClick={() => navigate('/old-questions')}
-              className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6"
+              className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-fit"
             >
               <ArrowLeft size={16} />
-              Back to Filter
+              Go Back
             </button>
             <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-bold uppercase tracking-widest text-xs mb-2">
               <span className="bg-primary-100 dark:bg-primary-900/30 px-2.5 py-1 rounded-md">{decodedBank}</span>

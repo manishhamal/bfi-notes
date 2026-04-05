@@ -129,11 +129,14 @@ export default function OldQuestionsReader() {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate(-1)}>
-              <ArrowLeft size={20} />
-              <div className="hidden sm:flex flex-col">
-                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Old Question</span>
-                 <span className="font-bold tracking-tight">{decodeURIComponent(bank || '')} {yearLabel}</span>
+            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(-1)}>
+              <div className="flex items-center gap-2 text-sm font-bold text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm">
+                <ArrowLeft size={16} />
+                <span>Go Back</span>
+              </div>
+              <div className="hidden sm:flex flex-col border-l border-slate-200 dark:border-slate-700 pl-4">
+                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">Old Question</span>
+                 <span className="font-bold tracking-tight leading-none truncate max-w-[150px]">{decodeURIComponent(bank || '')} {yearLabel}</span>
               </div>
             </div>
             
