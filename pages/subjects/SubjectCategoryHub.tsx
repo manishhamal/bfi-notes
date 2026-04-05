@@ -15,32 +15,7 @@ function isValidCategory(category: string | undefined): category is Category {
   return category ? (Object.values(Category) as string[]).includes(category) && category !== Category.All : false;
 }
 
-async function findSyllabusArticleId(category: string): Promise<string | null> {
-  const { data } = await supabase
-    .from('articles')
-    .select('id,tags,content')
-    .eq('category', category)
-    .order('date', { ascending: false });
 
-  const rows: any[] = data || [];
-  if (rows.length === 0) return null;
-
-  const isPdfLike = (text: string) => {
-    const t = (text || '').toLowerCase();
-    return t.includes('.pdf') || t.includes('application/pdf') || t.includes('<iframe') || t.includes('pdf') || t.includes('embed');
-  };
-
-  const byTags = rows.find((r) => {
-    const tags: string[] = Array.isArray(r.tags) ? r.tags : [];
-    return tags.some((t) => (t || '').toLowerCase().includes('syllabus'));
-  });
-  if (byTags?.id) return byTags.id;
-
-  const byContent = rows.find((r) => isPdfLike(r.content));
-  if (byContent?.id) return byContent.id;
-
-  return rows[0]?.id || null;
-}
 
 export default function SubjectCategoryHub() {
   const { category } = useParams<{ category: string }>();
@@ -54,19 +29,9 @@ export default function SubjectCategoryHub() {
     setIsValid(isValidCategory(normalizedCategory));
   }, [normalizedCategory]);
 
-  const onOpenSyllabus = async () => {
+  const onOpenSyllabus = () => {
     if (!isValid) return;
-    setLoading(true);
-    try {
-      const id = await findSyllabusArticleId(normalizedCategory);
-      if (!id) {
-        setLoading(false);
-        return;
-      }
-      navigate(`/articles/${id}`);
-    } finally {
-      setLoading(false);
-    }
+    navigate(`/subjects/${encodeURIComponent(normalizedCategory)}/syllabus/view`);
   };
 
   if (!isValid) {

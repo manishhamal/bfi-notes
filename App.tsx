@@ -15,6 +15,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Editor from './pages/admin/Editor';
 import TranslationHelper from './pages/admin/TranslationHelper';
+import SyllabusReader from './pages/SyllabusReader';
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
             <Route path="subjects/:category/:kind/:topic" element={<SubjectKindList />} />
           </Route>
           <Route path="articles/:id" element={<ArticleReader />} />
+          <Route path="subjects/:category/syllabus/view" element={<SyllabusReader />} />
           
           {/* Login */}
           <Route path="login" element={<Login />} />

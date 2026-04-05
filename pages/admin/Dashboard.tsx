@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../components/AuthProvider';
 import { Link, useNavigate } from 'react-router-dom';
-import { Pencil, Trash2, Plus, Eye, X, ArrowLeft, BookOpen } from 'lucide-react';
+import { Pencil, Trash2, Plus, Eye, X, ArrowLeft, BookOpen, FileText } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { Category } from '../../types';
+import SyllabusManager from '../../components/admin/SyllabusManager';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showSyllabusManager, setShowSyllabusManager] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   useEffect(() => {
@@ -79,13 +81,22 @@ export default function Dashboard() {
              {selectedCategory ? `Viewing all items published in ${selectedCategory}.` : 'Manage and organize all your published contents.'}
           </p>
         </div>
-        <button 
-          onClick={handleNewNote}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-xl transition-colors font-medium cursor-pointer"
-        >
-          <Plus size={20} />
-          New Note
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setShowSyllabusManager(true)}
+            className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white px-5 py-2.5 rounded-xl transition-colors font-bold shadow-sm cursor-pointer"
+          >
+            <FileText size={20} className="text-primary-600 dark:text-primary-400" />
+            Manage Syllabi
+          </button>
+          <button 
+            onClick={handleNewNote}
+            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-xl transition-colors font-bold cursor-pointer shadow-lg active:scale-95 shadow-primary-500/20"
+          >
+            <Plus size={20} />
+            New Note
+          </button>
+        </div>
       </div>
 
       {!selectedCategory ? (
@@ -196,6 +207,10 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      )}
+      
+      {showSyllabusManager && (
+         <SyllabusManager onClose={() => setShowSyllabusManager(false)} />
       )}
     </div>
   );

@@ -56,3 +56,30 @@ drop policy if exists "Authors can update own avatars" on storage.objects;
 create policy "Public can view avatars" on storage.objects for select using (bucket_id = 'avatars');
 create policy "Authenticated can upload avatars" on storage.objects for insert to authenticated with check (bucket_id = 'avatars');
 create policy "Authors can update own avatars" on storage.objects for update to authenticated using (bucket_id = 'avatars');
+
+-- 4. Syllabuses Table
+create table public.syllabuses (
+  category text primary key,
+  pdf_url text not null,
+  updated_at timestamp with time zone default now()
+);
+
+alter table public.syllabuses enable row level security;
+create policy "Syllabuses are viewable by everyone." on public.syllabuses for select using (true);
+create policy "Authenticated can insert syllabuses." on public.syllabuses for insert to authenticated with check (true);
+create policy "Authenticated can update syllabuses." on public.syllabuses for update to authenticated using (true);
+create policy "Authenticated can delete syllabuses." on public.syllabuses for delete to authenticated using (true);
+
+-- 5. Storage Bucket for Syllabuses
+insert into storage.buckets (id, name, public) values ('syllabuses', 'syllabuses', true) ON CONFLICT DO NOTHING;
+
+drop policy if exists "Public can view syllabuses" on storage.objects;
+drop policy if exists "Authenticated can upload syllabuses" on storage.objects;
+drop policy if exists "Authenticated can update syllabuses" on storage.objects;
+drop policy if exists "Authenticated can delete syllabuses" on storage.objects;
+
+create policy "Public can view syllabuses" on storage.objects for select using (bucket_id = 'syllabuses');
+create policy "Authenticated can upload syllabuses" on storage.objects for insert to authenticated with check (bucket_id = 'syllabuses');
+create policy "Authenticated can update syllabuses" on storage.objects for update to authenticated using (bucket_id = 'syllabuses');
+create policy "Authenticated can delete syllabuses" on storage.objects for delete to authenticated using (bucket_id = 'syllabuses');
+
