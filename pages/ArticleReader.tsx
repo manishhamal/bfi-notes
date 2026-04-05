@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'react-toastify';
 import FadeIn from '../components/FadeIn';
+import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { marked } from 'marked';
 
@@ -51,7 +52,7 @@ const ArticleReader: React.FC = () => {
     const fetchArticle = async () => {
       const { data, error } = await supabase
         .from('articles')
-        .select(`*`)
+        .select(`id, title, title_ne, content, content_ne, category, read_time, author_name, author_avatar, author_bio, views`)
         .eq('id', id)
         .single();
       
@@ -218,6 +219,10 @@ const ArticleReader: React.FC = () => {
       ref={scrollContainerRef}
       className={`fixed inset-0 overflow-y-auto transition-colors duration-300 ${themeColors[theme]} selection:bg-primary-200 selection:text-primary-900 z-[100]`}
     >
+      <SEO 
+        title={currentLanguage === 'en' ? article.title : (article.title_ne || article.title)}
+        description={article.excerpt || `Read this article on BFI Notes.`}
+      />
       {/* Top Navigation Bar */}
       <motion.nav 
         initial={{ y: -100 }}
@@ -444,6 +449,7 @@ const ArticleReader: React.FC = () => {
                 <img 
                   src={article.authorAvatar || `https://ui-avatars.com/api/?name=${article.authorName}&background=random`} 
                   alt={article.authorName}
+                  loading="lazy"
                   className="relative w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover shadow-xl grayscale group-hover:grayscale-0 transition-all duration-500 ring-4 ring-transparent group-hover:ring-primary-500/10 cursor-pointer"
                   referrerPolicy="no-referrer"
                 />

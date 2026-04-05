@@ -4,6 +4,7 @@ import { Search, User, BookOpen, ArrowRight, X, ChevronRight } from 'lucide-reac
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import FadeIn from '../components/FadeIn';
+import SEO from '../components/SEO';
 import ArticleCard from '../components/ArticleCard';
 
 interface AuthorProfile {
@@ -68,7 +69,7 @@ const Authors: React.FC = () => {
     const fetchData = async () => {
       const { data, error } = await supabase
         .from('articles')
-        .select('*')
+        .select('id, title, category, author_name, author_avatar, author_bio, date, tags')
         .order('date', { ascending: false });
 
       if (!error && data) {
@@ -164,6 +165,10 @@ const Authors: React.FC = () => {
 
   return (
     <div className="pb-20">
+      <SEO 
+        title={selectedAuthor ? `${selectedAuthor.name} | Authors` : 'Authors'}
+        description={selectedAuthor ? `Read notes and study materials by ${selectedAuthor.name}, a BFI Subject Matter Expert.` : 'Meet the contributors and mentors providing top-quality study notes for banking exams in Nepal.'}
+      />
       <header className="mb-10">
         <FadeIn>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

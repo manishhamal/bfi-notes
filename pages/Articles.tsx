@@ -4,6 +4,7 @@ import { Search, X, FileText, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ArticleCard from '../components/ArticleCard';
 import FadeIn from '../components/FadeIn';
+import SEO from '../components/SEO';
 import { Category } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -50,6 +51,41 @@ const Articles: React.FC = () => {
     fetchArticles();
   }, []);
 
+  const filteredArticles = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase().trim();
+    return articles.filter((article) => {
+      const matchesCategory = activeCategory === Category.All || article.category === activeCategory;
+      const matchesBank = !bankParam || article.bank === bankParam;
+      const matchesLevel = !levelParam || article.level === levelParam;
+      
+      if (!searchLower) return matchesCategory && matchesBank && matchesLevel;
+
+      const matchesSearch = 
+        article.title?.toLowerCase().includes(searchLower) || 
+        article.excerpt?.toLowerCase().includes(searchLower) ||
+        (article.authorName?.toLowerCase().includes(searchLower)) ||
+        (article.tags || []).some((tag: string) => tag.toLowerCase().includes(searchLower));
+        
+      return matchesCategory && matchesBank && matchesLevel && matchesSearch;
+    });
+  }, [activeCategory, bankParam, levelParam, searchQuery, articles]);
+
+  const seoTitle = useMemo(() => {
+    if (activeCategory !== Category.All) return activeCategory;
+    if (bankParam || levelParam) return [bankParam, levelParam].filter(Boolean).join(' ');
+    return 'Study Notes';
+  }, [activeCategory, bankParam, levelParam]);
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    if (cat === Category.All) {
+      searchParams.delete('category');
+      setSearchParams(searchParams);
+    } else {
+      setSearchParams({ category: cat });
+    }
+  };
+
   // Sync state with URL param if it changes externally
   useEffect(() => {
     if (categoryParam) {
@@ -65,34 +101,6 @@ const Articles: React.FC = () => {
       searchInputRef.current.focus();
     }
   }, [isSearchOpen]);
-
-  const filteredArticles = useMemo(() => {
-    return articles.filter((article) => {
-      const matchesCategory = activeCategory === Category.All || article.category === activeCategory;
-      const matchesBank = !bankParam || article.bank === bankParam;
-      const matchesLevel = !levelParam || article.level === levelParam;
-      
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = 
-        article.title?.toLowerCase().includes(searchLower) || 
-        article.excerpt?.toLowerCase().includes(searchLower) ||
-        article.content?.toLowerCase().includes(searchLower) ||
-        (article.authorName?.toLowerCase().includes(searchLower)) ||
-        (article.tags || []).some((tag: string) => tag.toLowerCase().includes(searchLower));
-        
-      return matchesCategory && matchesBank && matchesLevel && matchesSearch;
-    });
-  }, [activeCategory, bankParam, levelParam, searchQuery, articles]);
-
-  const handleCategoryChange = (cat: string) => {
-    setActiveCategory(cat);
-    if (cat === Category.All) {
-      searchParams.delete('category');
-      setSearchParams(searchParams);
-    } else {
-      setSearchParams({ category: cat });
-    }
-  };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -154,6 +162,10 @@ const Articles: React.FC = () => {
 
   return (
     <div className="pb-24">
+      <SEO 
+        title={seoTitle} 
+        description={`Browse our collection of ${seoTitle} study materials, notes, and solutions for banking exams.`}
+      />
       <FadeIn>
         <button
           onClick={() => navigate('/')}

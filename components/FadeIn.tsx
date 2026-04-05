@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 
 interface FadeInProps {
   children: React.ReactNode;
@@ -6,7 +6,7 @@ interface FadeInProps {
   className?: string;
 }
 
-const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, className = '' }) => {
+const FadeIn: React.FC<FadeInProps> = memo(({ children, delay = 0, className = '' }) => {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +41,6 @@ const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, className = '' }) 
       {children}
     </div>
   );
-};
+});
 
 export default FadeIn;

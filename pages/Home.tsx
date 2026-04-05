@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
+import SEO from '../components/SEO';
 import { Category } from '../types';
 import { BookOpen, Search, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -9,12 +10,13 @@ const Home: React.FC = () => {
   const categories = Object.values(Category).filter(cat => cat !== Category.All);
   
   const [latestArticles, setLatestArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLatest = async () => {
       const { data } = await supabase
         .from('articles')
-        .select(`*`)
+        .select(`id, title, category, excerpt, date, read_time, author_name`)
         .order('date', { ascending: false })
         .limit(5);
       
@@ -24,12 +26,19 @@ const Home: React.FC = () => {
           authorName: a.author_name || 'Admin'
         })));
       }
+      setLoading(false);
     };
     fetchLatest();
   }, []);
 
+  const memoizedArticles = useMemo(() => latestArticles, [latestArticles]);
+
   return (
     <div className="pb-24">
+      <SEO 
+        title="Home" 
+        description="BFI Notes: By Students, For Students. High-quality study materials for Banking and Finance exams in Nepal." 
+      />
       
       <FadeIn>
         <div className="text-left space-y-6 mb-20">
@@ -91,10 +100,12 @@ const Home: React.FC = () => {
           </div>
           
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-            {latestArticles.length === 0 ? (
-               <div className="py-4 text-slate-500">Loading latest notes...</div>
+            {loading ? (
+               <div className="py-4 text-slate-500 animate-pulse">Loading latest notes...</div>
+            ) : memoizedArticles.length === 0 ? (
+               <div className="py-4 text-slate-500">No notes published yet.</div>
             ) : null}
-            {latestArticles.map((article) => (
+            {memoizedArticles.map((article) => (
               <li key={article.id} className="group">
                 <Link to={`/articles/${article.id}`} className="py-6 block">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

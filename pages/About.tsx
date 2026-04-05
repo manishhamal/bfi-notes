@@ -2,10 +2,15 @@ import React from 'react';
 import { AUTHOR } from '../constants';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
+import SEO from '../components/SEO';
 
 const About: React.FC = () => {
   return (
     <div className="space-y-16 pb-24">
+      <SEO 
+        title="About" 
+        description="Learn more about BFI Notes, our mission to provide quality banking study materials in Nepal, and the team behind the platform."
+      />
       {/* Intro */}
       <FadeIn>
         <div className="flex flex-col md:flex-row gap-10 items-start text-left">
@@ -13,6 +18,7 @@ const About: React.FC = () => {
             src={AUTHOR.avatar} 
             alt={AUTHOR.name} 
             referrerPolicy="no-referrer"
+            loading="lazy"
             className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover grayscale hover:grayscale-0 transition-all duration-500"
           />
           <div className="space-y-2">

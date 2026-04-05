@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { User, ChevronRight } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface ArticleCardProps {
   compact?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard', compact = false }) => {
+const ArticleCard: React.FC<ArticleCardProps> = memo(({ article, variant = 'standard', compact = false }) => {
   const navigate = useNavigate();
 
   return (
@@ -37,6 +37,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard'
                 <img 
                   src={article.authorAvatar || `https://ui-avatars.com/api/?name=${article.authorName}&background=random`} 
                   alt={article.authorName}
+                  loading="lazy"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -66,6 +67,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, variant = 'standard'
       </div>
     </div>
   );
-};
+});
 
 export default ArticleCard;
