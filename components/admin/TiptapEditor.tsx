@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useEditor, EditorContent, Extension } from '@tiptap/react';
+import { useEditor, EditorContent, Extension, mergeAttributes } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Color } from '@tiptap/extension-color';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -59,11 +59,51 @@ const FontSize = Extension.create({
   },
 });
 
-// Custom TableCell with Background Color Support
+// Custom Table extensions to allow classes
+const CustomTable = Table.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          if (!attributes.class) return {};
+          return { class: attributes.class };
+        },
+      },
+    };
+  },
+});
+
+const CustomTableRow = TableRow.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          if (!attributes.class) return {};
+          return { class: attributes.class };
+        },
+      },
+    };
+  },
+});
+
 const CustomTableCell = TableCell.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          if (!attributes.class) return {};
+          return { class: attributes.class };
+        },
+      },
       backgroundColor: {
         default: null,
         parseHTML: element => element.style.backgroundColor || null,
@@ -160,12 +200,26 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   const insertMasterHeader = () => {
     // Single line HTML to prevent Tiptap from detecting it as a code block
-    const html = `<table class="psc-master-table"><tbody><tr><td colspan="2" style="font-weight: 800; font-size: 1.25rem;">लोक सेवा आयोग</td></tr><tr><td colspan="2" style="font-weight: 700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr><tr class="psc-dark-row"><td colspan="2">२०८१/०४/१२</td></tr><tr><td style="text-align: left;">पत्र : द्वितीय</td><td style="text-align: right;">पूर्णाङ्क : १००</td></tr><tr><td style="text-align: left;">समय: २ घण्टा ३० मिनेट</td><td></td></tr><tr><td colspan="2" style="font-weight: 700;">विषय : सेवा सम्बन्धी</td></tr></tbody></table><p></p>`;
+    // Using explicit alignment classes for official look
+    const html = `<table class="psc-master-table"><tbody>
+      <tr><td colspan="2" class="psc-center psc-bold" style="font-size: 1.25rem;">लोक सेवा आयोग</td></tr>
+      <tr><td colspan="2" class="psc-center psc-bold">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>
+      <tr class="psc-dark-row"><td colspan="2" class="psc-center">२०८१/०४/१२</td></tr>
+      <tr>
+        <td class="psc-left psc-bold">पत्र : द्वितीय</td>
+        <td class="psc-right psc-bold">पूर्णाङ्क : १००</td>
+      </tr>
+      <tr>
+        <td class="psc-left psc-bold">समय: २ घण्टा ३० मिनेट</td>
+        <td></td>
+      </tr>
+      <tr><td colspan="2" class="psc-center psc-bold">विषय : सेवा सम्बन्धी</td></tr>
+    </tbody></table><p></p>`;
     editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
   };
 
   const insertSectionHeader = () => {
-    const section = window.prompt('Section Name (e.g. खण्ड "ख")', 'खण्ड "ख"');
+    const section = window.prompt('Section Name (e.g. खण्ड "क")', 'खण्ड "क"');
     const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
     if (section) {
       const html = `<div class="psc-section-header"><span>${section}</span><span class="psc-section-marks">${marks}</span></div><p></p>`;
@@ -257,8 +311,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       }),
       Link.configure({ openOnClick: false }),
       Image,
-      Table.configure({ resizable: true }),
-      TableRow,
+      CustomTable.configure({ resizable: true }),
+      CustomTableRow,
       TableHeader,
       CustomTableCell,
     ],

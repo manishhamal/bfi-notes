@@ -309,48 +309,65 @@
   }
 
   /* PSC (Lok Sewa) Special Formatting */
-  .psc-master-table {
-    border: 3px solid #000 !important;
+  .psc-master-table, .tiptap .psc-master-table {
+    border: 4px solid #000 !important;
     width: 100% !important;
-    margin-bottom: 2rem !important;
+    margin-bottom: 2.5rem !important;
     border-collapse: collapse !important;
+    table-layout: fixed !important;
+    background-color: #fff !important;
+    color: #000 !important;
   }
   
-  .psc-master-table td {
+  .psc-master-table td, .tiptap .psc-master-table td {
     border: 1px solid #000 !important;
-    padding: 8px 12px !important;
-    text-align: center !important;
+    padding: 12px 18px !important;
     vertical-align: middle !important;
+    line-height: 1.5 !important;
+    font-family: inherit !important;
+    color: #000 !important;
   }
 
-  .psc-dark-row {
+  /* Alignment utilities to skip Tiptap stripping */
+  .psc-center, .tiptap .psc-center { text-align: center !important; }
+  .psc-left, .tiptap .psc-left { text-align: left !important; }
+  .psc-right, .tiptap .psc-right { text-align: right !important; }
+  .psc-bold, .tiptap .psc-bold { font-weight: 800 !important; }
+
+  .psc-dark-row, .tiptap tr.psc-dark-row {
     background-color: #000 !important;
     color: #fff !important;
-    font-weight: bold !important;
   }
   
-  .psc-dark-row td {
+  .psc-dark-row td, .tiptap tr.psc-dark-row td {
+    background-color: #000 !important;
     color: #fff !important;
-    border-color: #333 !important;
+    border-color: #222 !important;
+    text-align: center !important;
+    padding: 8px !important;
+    font-weight: 800 !important;
   }
 
-  .psc-section-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    margin: 2rem 0 1.5rem 0;
-    padding: 0.5rem 0;
-    font-weight: 800;
-    font-size: 1.25rem;
-    border-bottom: 2px solid transparent;
+  .psc-section-header, .tiptap .psc-section-header {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    margin: 3.5rem 0 2rem 0 !important;
+    padding: 0.5rem 0 !important;
+    font-weight: 800 !important;
+    font-size: 1.45rem !important;
+    text-align: center !important;
+    color: #000 !important;
+    border: none !important;
   }
 
-  .psc-section-marks {
-    position: absolute;
-    right: 0;
-    font-size: 0.9rem;
-    font-weight: 700;
+  .psc-section-marks, .tiptap .psc-section-marks {
+    position: absolute !important;
+    right: 0 !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    color: #000 !important;
   }
 
   /* Support for Tiptap cell background colors */
@@ -359,19 +376,25 @@
     color: inherit;
   }
 
-  .dark .psc-master-table {
-    border-color: #fff !important;
+  .dark .psc-master-table, .dark .tiptap .psc-master-table {
+    border-color: #e5e7eb !important;
+    background-color: transparent !important;
   }
-  .dark .psc-master-table td {
-    border-color: #444 !important;
+  .dark .psc-master-table td, .dark .tiptap .psc-master-table td {
+    border-color: #334155 !important;
     color: #fff !important;
   }
-  .dark .psc-dark-row {
+  .dark .psc-dark-row, .dark .tiptap tr.psc-dark-row {
     background-color: #f8fafc !important;
     color: #000 !important;
   }
-  .dark .psc-dark-row td {
+  .dark .psc-dark-row td, .dark .tiptap tr.psc-dark-row td {
+    background-color: #f8fafc !important;
     color: #000 !important;
+  }
+  .dark .psc-section-header, .dark .tiptap .psc-section-header,
+  .dark .psc-section-marks, .dark .tiptap .psc-section-marks {
+    color: #fff !important;
   }
 }
 
