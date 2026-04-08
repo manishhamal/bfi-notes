@@ -188,18 +188,20 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
   const insertMasterHeader = () => {
     const tableStyle = 'border:4px solid #000;width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;';
-    const cellBase = 'border:1px solid #000;padding:10px 16px;vertical-align:middle;line-height:1.5;font-family:inherit;';
-    const centerCell = cellBase + 'text-align:center;';
-    const leftCell = cellBase + 'text-align:left;';
-    const rightCell = cellBase + 'text-align:right;';
-    const darkCell = 'border:1px solid #222;padding:8px 16px;text-align:center;background-color:#000;color:#fff;font-weight:800;vertical-align:middle;';
+    const cellBase = 'border:1px solid #000;padding:10px 16px;vertical-align:middle;';
+
+    // p tags get explicit text-align so Tiptap's TextAlign extension registers it correctly
+    const pC = 'style="text-align:center;margin:0;line-height:1.5;"'; // center paragraph
+    const pL = 'style="text-align:left;margin:0;line-height:1.5;"';   // left paragraph
+    const pR = 'style="text-align:right;margin:0;line-height:1.5;"';  // right paragraph
+    const pCW = 'style="text-align:center;margin:0;color:#fff;line-height:1.5;"'; // center white
 
     const html = `<table style="${tableStyle}"><tbody>`
-      + `<tr><td colspan="2" style="${centerCell}font-weight:800;font-size:1.2rem;">लोक सेवा आयोग</td></tr>`
-      + `<tr><td colspan="2" style="${centerCell}font-weight:700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>`
-      + `<tr><td colspan="2" style="${darkCell}">२०८१/०४/१२</td></tr>`
-      + `<tr><td style="${leftCell}vertical-align:top;">पत्र : द्वितीय<br>समय: २ घण्टा ३० मिनेट</td><td style="${rightCell}vertical-align:top;">पूर्णाङ्क : १००</td></tr>`
-      + `<tr><td colspan="2" style="${centerCell}font-weight:700;">विषय : सेवा सम्बन्धी</td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}><strong>लोक सेवा आयोग</strong></p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}>कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको</p><p ${pC}>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}background-color:#000;padding:8px 16px;"><p ${pCW}><strong>२०८१/०४/१२</strong></p></td></tr>`
+      + `<tr><td style="${cellBase}vertical-align:top;"><p ${pL}>पत्र : द्वितीय</p><p ${pL}>समय: २ घण्टा ३० मिनेट</p></td><td style="${cellBase}vertical-align:top;"><p ${pR}>पूर्णाङ्क : १००</p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}><strong>विषय : सेवा सम्बन्धी</strong></p></td></tr>`
       + `</tbody></table><p></p>`;
     editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
   };
