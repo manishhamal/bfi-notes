@@ -198,8 +198,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       + `<tr><td colspan="2" style="${centerCell}font-weight:800;font-size:1.2rem;">लोक सेवा आयोग</td></tr>`
       + `<tr><td colspan="2" style="${centerCell}font-weight:700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>`
       + `<tr><td colspan="2" style="${darkCell}">२०८१/०४/१२</td></tr>`
-      + `<tr><td style="${leftCell}">पत्र : द्वितीय</td><td style="${rightCell}">पूर्णाङ्क : १००</td></tr>`
-      + `<tr><td colspan="2" style="${leftCell}">समय: २ घण्टा ३० मिनेट</td></tr>`
+      + `<tr><td style="${leftCell}vertical-align:top;">पत्र : द्वितीय<br>समय: २ घण्टा ३० मिनेट</td><td style="${rightCell}vertical-align:top;">पूर्णाङ्क : १००</td></tr>`
       + `<tr><td colspan="2" style="${centerCell}font-weight:700;">विषय : सेवा सम्बन्धी</td></tr>`
       + `</tbody></table><p></p>`;
     editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
@@ -209,9 +208,11 @@ const MenuBar = ({ editor }: { editor: any }) => {
     const section = window.prompt('Section Name (e.g. खण्ड "क")', 'खण्ड "क"');
     const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
     if (section) {
-      const html = `<div style="display:flex;justify-content:center;align-items:center;position:relative;margin:3rem 0 1.5rem 0;padding:0.25rem 0;font-weight:800;font-size:1.35rem;color:#000;">`
-        + `<span>${section}</span>`
-        + `<span style="position:absolute;right:0;font-weight:800;font-size:1.1rem;">${marks}</span>`
+      // Use space-between flex so marks go far right without position:absolute (which DOMPurify strips)
+      const html = `<div style="display:flex;justify-content:space-between;align-items:center;margin:3rem 0 1.5rem 0;padding:0.25rem 0;font-weight:800;font-size:1.35rem;color:#000;">`
+        + `<span style="flex:1;"></span>`
+        + `<span style="font-weight:800;font-size:1.35rem;">${section}</span>`
+        + `<span style="flex:1;text-align:right;font-size:1.1rem;">${marks}</span>`
         + `</div><p></p>`;
       editor.chain().focus().insertContent(html).run();
     }
