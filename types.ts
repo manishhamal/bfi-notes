@@ -43,3 +43,14 @@ export interface Article {
   authorAvatar?: string;
   authorBio?: string;
 }
+
+export interface OldQuestion {
+  id: string;
+  bank: Bank;
+  level: Level;
+  year: string;
+  pdf_url?: string;
+  content?: string;
+  content_ne?: string;
+  updated_at: string;
+}

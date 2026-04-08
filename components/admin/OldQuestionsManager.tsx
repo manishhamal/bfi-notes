@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { BANKS, LEVELS, Bank, Level } from '../../types';
-import { X, UploadCloud, FileText, Loader2, Trash2 } from 'lucide-react';
+import { BANKS, LEVELS, Bank, Level, OldQuestion } from '../../types';
+import { X, UploadCloud, FileText, Loader2, Trash2, Type } from 'lucide-react';
 import { toast } from 'react-toastify';
-
-interface OldQuestion {
-  id: string;
-  bank: Bank;
-  level: Level;
-  year: string;
-  pdf_url: string;
-  updated_at: string;
-}
+import TiptapEditor from './TiptapEditor';
 
 export default function OldQuestionsManager({ onClose }: { onClose: () => void }) {
   const [questions, setQuestions] = useState<OldQuestion[]>([]);
@@ -21,6 +13,8 @@ export default function OldQuestionsManager({ onClose }: { onClose: () => void }
   const [formBank, setFormBank] = useState<Bank>(BANKS[0]);
   const [formLevel, setFormLevel] = useState<Level>(LEVELS[0]);
   const [formYear, setFormYear] = useState('');
+  const [formMode, setFormMode] = useState<'pdf' | 'text'>('text');
+  const [formContent, setFormContent] = useState('');
 
   useEffect(() => {
     fetchQuestions();
@@ -67,20 +61,47 @@ export default function OldQuestionsManager({ onClose }: { onClose: () => void }
         pdf_url: publicUrl 
       }]);
 
-      if (dbError) {
-        if (dbError.message.includes('relation "public.old_questions" does not exist')) {
-          toast.error('SQL Schema not updated! Please run the latest SQL commands in Supabase.');
-        } else {
-          toast.error('Failed to update database.');
-        }
-        throw dbError;
-      }
+      if (dbError) throw dbError;
 
       toast.success(`${formBank} ${formLevel} - ${formYear} uploaded perfectly!`);
-      setFormYear(''); // reset form
+      setFormYear('');
       fetchQuestions();
     } catch (err: any) {
       console.error('Error uploading:', err);
+      toast.error('Upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSaveTextContent = async () => {
+    if (!formYear.trim()) {
+      toast.warning('Please enter a Year / Description first.');
+      return;
+    }
+    if (!formContent.trim()) {
+      toast.warning('Please enter some content first.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { error: dbError } = await supabase.from('old_questions').insert([{ 
+        bank: formBank, 
+        level: formLevel, 
+        year: formYear,
+        content: formContent
+      }]);
+
+      if (dbError) throw dbError;
+
+      toast.success(`${formBank} ${formLevel} - ${formYear} saved successfully!`);
+      setFormYear('');
+      setFormContent('');
+      fetchQuestions();
+    } catch (err: any) {
+      console.error('Error saving:', err);
+      toast.error('Save failed.');
     } finally {
       setUploading(false);
     }
@@ -113,12 +134,12 @@ export default function OldQuestionsManager({ onClose }: { onClose: () => void }
            {bankQs.map(q => (
              <div key={q.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
-                    <FileText size={16} />
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${q.pdf_url ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'}`}>
+                    {q.pdf_url ? <FileText size={16} /> : <Type size={16} />}
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">{q.level}</h4>
-                    <span className="text-xs text-slate-500 font-medium">Year: {q.year}</span>
+                    <span className="text-xs text-slate-500 font-medium">Year: {q.year} {q.content ? '(Formatted Text)' : '(PDF)'}</span>
                   </div>
                 </div>
                 <button 
@@ -138,11 +159,11 @@ export default function OldQuestionsManager({ onClose }: { onClose: () => void }
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-8 flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between mb-8 shrink-0">
+      <div className="relative bg-white dark:bg-slate-900 w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-8 flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="flex items-center justify-between mb-6 shrink-0">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Old Questions Vault</h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Upload and organize past papers by Bank, Level, and Year.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Add past papers either as PDFs or as formatted text papers.</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-500">
             <X size={20} />
@@ -152,56 +173,90 @@ export default function OldQuestionsManager({ onClose }: { onClose: () => void }
         <div className="overflow-y-auto pr-2 pb-4 flex-1">
           {/* Uploader Form */}
           <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-8">
-             <h3 className="font-bold text-slate-900 dark:text-white mb-4">Add New Question Paper</h3>
-             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h3 className="font-bold text-slate-900 dark:text-white">Add New Question Paper</h3>
+                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                   <button 
+                     onClick={() => setFormMode('text')} 
+                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${formMode === 'text' ? 'bg-primary-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+                   >
+                     Typed Text (Recommended)
+                   </button>
+                   <button 
+                     onClick={() => setFormMode('pdf')} 
+                     className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${formMode === 'pdf' ? 'bg-primary-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+                   >
+                     PDF Upload
+                   </button>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Bank</label>
-                  <select 
+                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Bank</label>
+                   <select 
                     value={formBank} 
                     onChange={e => setFormBank(e.target.value as Bank)}
                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary-500 font-medium"
-                  >
+                   >
                     {BANKS.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
+                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Level</label>
-                  <select 
+                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Level</label>
+                   <select 
                     value={formLevel} 
                     onChange={e => setFormLevel(e.target.value as Level)}
                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary-500 font-medium"
-                  >
+                   >
                     {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
+                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Year / Info</label>
-                  <input 
+                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Year / Info</label>
+                   <input 
                     type="text"
                     value={formYear}
                     onChange={e => setFormYear(e.target.value)}
                     placeholder="e.g. 2078 BS"
                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary-500 font-medium"
-                  />
+                   />
                 </div>
              </div>
-             
-             <label className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all cursor-pointer ${
-                uploading ? 'bg-primary-500 opacity-50 text-white' : 'bg-primary-600 hover:bg-primary-500 text-white shadow-lg shadow-primary-600/20'
-             }`}>
-                {uploading ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
-                <span>{uploading ? 'Processing & Uploading...' : 'Select PDF to Upload'}</span>
-                <input 
-                  type="file" 
-                  accept="application/pdf"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-             </label>
+
+             {formMode === 'text' ? (
+                <div className="space-y-4">
+                   <div className="min-h-[400px]">
+                      <TiptapEditor content={formContent} onChange={setFormContent} placeholder="Type or paste old questions from Google Docs here..." />
+                   </div>
+                   <button 
+                     onClick={handleSaveTextContent}
+                     disabled={uploading}
+                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-primary-600 hover:bg-primary-500 text-white shadow-lg shadow-primary-600/20 transition-all disabled:opacity-50"
+                   >
+                     {uploading ? <Loader2 size={18} className="animate-spin" /> : <Type size={18} />}
+                     <span>{uploading ? 'Saving Content...' : 'Save Typed Question Paper'}</span>
+                   </button>
+                </div>
+             ) : (
+                <label className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all cursor-pointer ${
+                   uploading ? 'bg-primary-500 opacity-50 text-white' : 'bg-primary-600 hover:bg-primary-500 text-white shadow-lg shadow-primary-600/20'
+                }`}>
+                   {uploading ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
+                   <span>{uploading ? 'Processing & Uploading...' : 'Select PDF to Upload'}</span>
+                   <input 
+                     type="file" 
+                     accept="application/pdf"
+                     onChange={handleFileUpload}
+                     disabled={uploading}
+                     className="hidden"
+                   />
+                </label>
+             )}
           </div>
 
           <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
+            <h3 className="font-bold text-slate-900 dark:text-white mb-6">Existing Collection</h3>
             {loading ? (
               <div className="flex justify-center py-8"><Loader2 className="animate-spin text-slate-400" /></div>
             ) : questions.length === 0 ? (
