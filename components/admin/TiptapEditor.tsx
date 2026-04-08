@@ -187,21 +187,22 @@ const MenuBar = ({ editor }: { editor: any }) => {
   };
 
   const insertMasterHeader = () => {
-    const tableStyle = 'border:4px solid #000;width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;';
-    const cellBase = 'border:1px solid #000;padding:10px 16px;vertical-align:middle;';
-
-    // p tags get explicit text-align so Tiptap's TextAlign extension registers it correctly
-    const pC = 'style="text-align:center;margin:0;line-height:1.5;"'; // center paragraph
-    const pL = 'style="text-align:left;margin:0;line-height:1.5;"';   // left paragraph
-    const pR = 'style="text-align:right;margin:0;line-height:1.5;"';  // right paragraph
-    const pCW = 'style="text-align:center;margin:0;color:#fff;line-height:1.5;"'; // center white
+    const tableStyle = 'border:4px solid #000;width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;background-color:#fff;';
+    const cellBase = 'border:1px solid #000;padding:12px 16px;vertical-align:middle;';
+    
+    // Double-layer styling: TD gets align and P gets the same align with !important behavior via inline style.
+    // This bypasses Tiptap's TextAlign extension overriding with global justify rules.
+    const pC = 'style="text-align:center;margin:0;line-height:1.5;font-family:inherit;font-weight:700;"'; 
+    const pL = 'style="text-align:left;margin:0;line-height:1.5;"';   
+    const pR = 'style="text-align:right;margin:0;line-height:1.5;"';  
+    const pCW = 'style="text-align:center;margin:0;color:#fff;line-height:1.5;font-weight:800;"';
 
     const html = `<table style="${tableStyle}"><tbody>`
-      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}><strong>लोक सेवा आयोग</strong></p></td></tr>`
-      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}>कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको</p><p ${pC}>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</p></td></tr>`
-      + `<tr><td colspan="2" style="${cellBase}background-color:#000;padding:8px 16px;"><p ${pCW}><strong>२०८१/०४/१२</strong></p></td></tr>`
-      + `<tr><td style="${cellBase}vertical-align:top;"><p ${pL}>पत्र : द्वितीय</p><p ${pL}>समय: २ घण्टा ३० मिनेट</p></td><td style="${cellBase}vertical-align:top;"><p ${pR}>पूर्णाङ्क : १००</p></td></tr>`
-      + `<tr><td colspan="2" style="${cellBase}"><p ${pC}><strong>विषय : सेवा सम्बन्धी</strong></p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}text-align:center;"><p ${pC} style="font-size:1.25rem;text-align:center;"><strong>लोक सेवा आयोग</strong></p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}text-align:center;"><p ${pC} style="text-align:center;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको</p><p ${pC} style="text-align:center;">खुल्ला प्रतियोगितात्मक लिखित परीक्षा</p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}background-color:#000;text-align:center;padding:8px 16px;"><p ${pCW} style="text-align:center;color:#fff;"><strong>२०८१/०४/१२</strong></p></td></tr>`
+      + `<tr><td style="${cellBase}text-align:left;vertical-align:top;"><p ${pL} style="text-align:left;">पत्र : द्वितीय</p><p ${pL} style="text-align:left;">समय: २ घण्टा ३० मिनेट</p></td><td style="${cellBase}text-align:right;vertical-align:top;"><p ${pR} style="text-align:right;">पूर्णाङ्क : १००</p></td></tr>`
+      + `<tr><td colspan="2" style="${cellBase}text-align:center;"><p ${pC} style="text-align:center;"><strong>विषय : सेवा सम्बन्धी</strong></p></td></tr>`
       + `</tbody></table><p></p>`;
     editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
   };
@@ -212,11 +213,11 @@ const MenuBar = ({ editor }: { editor: any }) => {
     if (section) {
       // Use a borderless table for section - Tiptap converts <div> to <p>, destroying flex layout
       const noCell = 'border:none;padding:8px 0;vertical-align:middle;';
-      const html = `<table style="width:100%;border:none;border-collapse:collapse;margin:3rem 0 1.5rem 0;"><tbody>`
+      const html = `<table style="width:100%;border:none;border-collapse:collapse;margin:3.5rem 0 1.5rem 0;"><tbody>`
         + `<tr>`
-        + `<td style="${noCell}width:33%;"></td>`
-        + `<td style="${noCell}text-align:center;font-weight:800;font-size:1.35rem;width:34%;">${section}</td>`
-        + `<td style="${noCell}text-align:right;font-weight:800;font-size:1.1rem;width:33%;white-space:nowrap;">${marks}</td>`
+        + `<td style="${noCell}width:20%;"></td>`
+        + `<td style="${noCell}text-align:center;width:60%;"><p style="text-align:center;margin:0;font-weight:800;font-size:1.45rem;">${section}</p></td>`
+        + `<td style="${noCell}text-align:right;width:20%;"><p style="text-align:right;margin:0;font-weight:800;font-size:1.1rem;white-space:nowrap;">${marks}</p></td>`
         + `</tr>`
         + `</tbody></table><p></p>`;
       editor.chain().focus().insertContent(html).run();
