@@ -59,60 +59,48 @@ const FontSize = Extension.create({
   },
 });
 
-// Custom Table extensions to allow classes
+// Helper to parse full style attribute
+const styleAttr = {
+  style: {
+    default: null,
+    parseHTML: (element: HTMLElement) => element.getAttribute('style') || null,
+    renderHTML: (attributes: any) => {
+      if (!attributes.style) return {};
+      return { style: attributes.style };
+    },
+  },
+  class: {
+    default: null,
+    parseHTML: (element: HTMLElement) => element.getAttribute('class') || null,
+    renderHTML: (attributes: any) => {
+      if (!attributes.class) return {};
+      return { class: attributes.class };
+    },
+  },
+};
+
+// Custom Table extensions to preserve style and class
 const CustomTable = Table.extend({
   addAttributes() {
-    return {
-      ...this.parent?.(),
-      class: {
-        default: null,
-        parseHTML: element => element.getAttribute('class'),
-        renderHTML: attributes => {
-          if (!attributes.class) return {};
-          return { class: attributes.class };
-        },
-      },
-    };
+    return { ...this.parent?.(), ...styleAttr };
   },
 });
 
 const CustomTableRow = TableRow.extend({
   addAttributes() {
-    return {
-      ...this.parent?.(),
-      class: {
-        default: null,
-        parseHTML: element => element.getAttribute('class'),
-        renderHTML: attributes => {
-          if (!attributes.class) return {};
-          return { class: attributes.class };
-        },
-      },
-    };
+    return { ...this.parent?.(), ...styleAttr };
   },
 });
 
 const CustomTableCell = TableCell.extend({
   addAttributes() {
-    return {
-      ...this.parent?.(),
-      class: {
-        default: null,
-        parseHTML: element => element.getAttribute('class'),
-        renderHTML: attributes => {
-          if (!attributes.class) return {};
-          return { class: attributes.class };
-        },
-      },
-      backgroundColor: {
-        default: null,
-        parseHTML: element => element.style.backgroundColor || null,
-        renderHTML: attributes => {
-          if (!attributes.backgroundColor) return {};
-          return { style: `background-color: ${attributes.backgroundColor}` };
-        },
-      },
-    };
+    return { ...this.parent?.(), ...styleAttr };
+  },
+});
+
+const CustomTableHeader = TableHeader.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...styleAttr };
   },
 });
 
@@ -315,7 +303,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       Image,
       CustomTable.configure({ resizable: true }),
       CustomTableRow,
-      TableHeader,
+      CustomTableHeader,
       CustomTableCell,
     ],
     content: content,
