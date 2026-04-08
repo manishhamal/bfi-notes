@@ -21,7 +21,6 @@ import {
   AlignJustify, Indent as IndentIcon, Outdent as OutdentIcon,
   Layout, Bookmark
 } from 'lucide-react';
-import { Markdown } from 'tiptap-markdown';
 
 // Custom font size extension
 const FontSize = Extension.create({
@@ -160,38 +159,17 @@ const MenuBar = ({ editor }: { editor: any }) => {
   };
 
   const insertMasterHeader = () => {
-    editor.chain().focus().insertContent(`
-      <table class="psc-master-table">
-        <tbody>
-          <tr><td colspan="2" style="font-weight: 800; font-size: 1.25rem;">लोक सेवा आयोग</td></tr>
-          <tr><td colspan="2" style="font-weight: 700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>
-          <tr class="psc-dark-row"><td colspan="2">२०८१/०४/१२</td></tr>
-          <tr>
-            <td style="text-align: left;">पत्र : द्वितीय</td>
-            <td style="text-align: right;">पूर्णाङ्क : १००</td>
-          </tr>
-          <tr>
-            <td style="text-align: left;">समय: २ घण्टा ३० मिनेट</td>
-            <td></td>
-          </tr>
-          <tr><td colspan="2" style="font-weight: 700;">विषय : सेवा सम्बन्धी</td></tr>
-        </tbody>
-      </table>
-      <p></p>
-    `).run();
+    // Single line HTML to prevent Tiptap from detecting it as a code block
+    const html = `<table class="psc-master-table"><tbody><tr><td colspan="2" style="font-weight: 800; font-size: 1.25rem;">लोक सेवा आयोग</td></tr><tr><td colspan="2" style="font-weight: 700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr><tr class="psc-dark-row"><td colspan="2">२०८१/०४/१२</td></tr><tr><td style="text-align: left;">पत्र : द्वितीय</td><td style="text-align: right;">पूर्णाङ्क : १००</td></tr><tr><td style="text-align: left;">समय: २ घण्टा ३० मिनेट</td><td></td></tr><tr><td colspan="2" style="font-weight: 700;">विषय : सेवा सम्बन्धी</td></tr></tbody></table><p></p>`;
+    editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
   };
 
   const insertSectionHeader = () => {
     const section = window.prompt('Section Name (e.g. खण्ड "ख")', 'खण्ड "ख"');
     const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
     if (section) {
-      editor.chain().focus().insertContent(`
-        <div class="psc-section-header">
-          <span>${section}</span>
-          <span class="psc-section-marks">${marks}</span>
-        </div>
-        <p></p>
-      `).run();
+      const html = `<div class="psc-section-header"><span>${section}</span><span class="psc-section-marks">${marks}</span></div><p></p>`;
+      editor.chain().focus().insertContent(html).run();
     }
   };
 
@@ -263,6 +241,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        codeBlock: false,
+        code: false,
       }),
       Underline,
       Color,
@@ -281,7 +261,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       TableRow,
       TableHeader,
       CustomTableCell,
-      Markdown,
     ],
     content: content,
     onUpdate: ({ editor }) => {

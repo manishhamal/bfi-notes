@@ -292,24 +292,40 @@ export default function OldQuestionsReader() {
             </div>
 
             <div ref={contentRef} className="w-full">
-              {oq.content ? (
-                <div 
-                  className={[
-                    'document-paper mb-12',
-                    theme === 'sepia' ? 'document-paper-sepia' : '',
-                    'professional-doc',
-                  ].filter(Boolean).join(' ')}
-                >
+              {oq.content ? (() => {
+                // Failsafe: Strip accidental <pre><code> wrapping if present
+                let displayContent = oq.content;
+                const codeMatch = displayContent.match(/<pre><code>([\s\S]*?)<\/code><\/pre>/i);
+                if (codeMatch) {
+                  const temporalDiv = document.createElement("div");
+                  temporalDiv.innerHTML = codeMatch[1];
+                  displayContent = temporalDiv.textContent || temporalDiv.innerText || "";
+                }
+
+                return (
                   <div 
-                    className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
-                      prose-headings:font-bold prose-headings:tracking-tight
-                      prose-p:leading-normal
-                      prose-li:mb-2`}
-                    style={{ fontSize: `${fontSize}px` }}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(oq.content) }}
-                  />
-                </div>
-              ) : oq.pdf_url ? (
+                    className={[
+                      'document-paper mb-12',
+                      theme === 'sepia' ? 'document-paper-sepia' : '',
+                      'professional-doc',
+                    ].filter(Boolean).join(' ')}
+                  >
+                    <div 
+                      className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
+                        prose-headings:font-bold prose-headings:tracking-tight
+                        prose-p:leading-normal
+                        prose-li:mb-2`}
+                      style={{ fontSize: `${fontSize}px` }}
+                      dangerouslySetInnerHTML={{ 
+                        __html: DOMPurify.sanitize(displayContent, {
+                          ADD_ATTR: ['colspan', 'rowspan', 'style', 'class'],
+                          ADD_TAGS: ['table', 'tr', 'td', 'th', 'div', 'span', 'br']
+                        }) 
+                      }}
+                    />
+                  </div>
+                );
+              })() : oq.pdf_url ? (
                 <div className="document-paper mb-12 flex flex-col items-center p-0 overflow-hidden bg-white shadow-xl">
                   <Document file={oq.pdf_url} onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
                     {Array.from(new Array(numPages), (el, index) => (
