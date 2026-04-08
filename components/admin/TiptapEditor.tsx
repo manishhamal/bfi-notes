@@ -208,12 +208,15 @@ const MenuBar = ({ editor }: { editor: any }) => {
     const section = window.prompt('Section Name (e.g. खण्ड "क")', 'खण्ड "क"');
     const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
     if (section) {
-      // Use space-between flex so marks go far right without position:absolute (which DOMPurify strips)
-      const html = `<div style="display:flex;justify-content:space-between;align-items:center;margin:3rem 0 1.5rem 0;padding:0.25rem 0;font-weight:800;font-size:1.35rem;color:#000;">`
-        + `<span style="flex:1;"></span>`
-        + `<span style="font-weight:800;font-size:1.35rem;">${section}</span>`
-        + `<span style="flex:1;text-align:right;font-size:1.1rem;">${marks}</span>`
-        + `</div><p></p>`;
+      // Use a borderless table for section - Tiptap converts <div> to <p>, destroying flex layout
+      const noCell = 'border:none;padding:8px 0;vertical-align:middle;';
+      const html = `<table style="width:100%;border:none;border-collapse:collapse;margin:3rem 0 1.5rem 0;"><tbody>`
+        + `<tr>`
+        + `<td style="${noCell}width:33%;"></td>`
+        + `<td style="${noCell}text-align:center;font-weight:800;font-size:1.35rem;width:34%;">${section}</td>`
+        + `<td style="${noCell}text-align:right;font-weight:800;font-size:1.1rem;width:33%;white-space:nowrap;">${marks}</td>`
+        + `</tr>`
+        + `</tbody></table><p></p>`;
       editor.chain().focus().insertContent(html).run();
     }
   };

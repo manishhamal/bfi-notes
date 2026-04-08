@@ -184,7 +184,7 @@
     color: #1e293b !important; /* Force readable slate in light mode */
   }
 
-  /* Allow table cells to control their own text alignment */
+  /* Allow table cells to control their own text alignment AND color */
   .professional-doc td p,
   .professional-doc th p,
   .tiptap td p,
@@ -192,6 +192,7 @@
   .prose td p,
   .prose th p {
     text-align: inherit !important;
+    color: inherit !important;
     margin-bottom: 0 !important;
   }
 
