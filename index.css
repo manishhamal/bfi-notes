@@ -307,5 +307,71 @@
     word-break: break-word !important;
     overflow-wrap: break-word !important;
   }
+
+  /* PSC (Lok Sewa) Special Formatting */
+  .psc-master-table {
+    border: 3px solid #000 !important;
+    width: 100% !important;
+    margin-bottom: 2rem !important;
+    border-collapse: collapse !important;
+  }
+  
+  .psc-master-table td {
+    border: 1px solid #000 !important;
+    padding: 8px 12px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  .psc-dark-row {
+    background-color: #000 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+  }
+  
+  .psc-dark-row td {
+    color: #fff !important;
+    border-color: #333 !important;
+  }
+
+  .psc-section-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 2rem 0 1.5rem 0;
+    padding: 0.5rem 0;
+    font-weight: 800;
+    font-size: 1.25rem;
+    border-bottom: 2px solid transparent;
+  }
+
+  .psc-section-marks {
+    position: absolute;
+    right: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* Support for Tiptap cell background colors */
+  .tiptap td[style*="background-color"], 
+  .prose td[style*="background-color"] {
+    color: inherit;
+  }
+
+  .dark .psc-master-table {
+    border-color: #fff !important;
+  }
+  .dark .psc-master-table td {
+    border-color: #444 !important;
+    color: #fff !important;
+  }
+  .dark .psc-dark-row {
+    background-color: #f8fafc !important;
+    color: #000 !important;
+  }
+  .dark .psc-dark-row td {
+    color: #000 !important;
+  }
 }
 

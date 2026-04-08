@@ -304,8 +304,7 @@ export default function OldQuestionsReader() {
                     className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
                       prose-headings:font-bold prose-headings:tracking-tight
                       prose-p:leading-normal
-                      prose-li:mb-2
-                      [&_table]:border-collapse [&_table]:w-full [&_td]:border [&_td]:p-2 [&_th]:border [&_th]:p-2`}
+                      prose-li:mb-2`}
                     style={{ fontSize: `${fontSize}px` }}
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(oq.content) }}
                   />

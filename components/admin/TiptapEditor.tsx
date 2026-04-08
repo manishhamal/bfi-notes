@@ -18,7 +18,8 @@ import {
   AlignRight, List, ListOrdered, Heading1, Heading2, 
   Heading3, Link as LinkIcon, Image as ImageIcon, 
   Table as TableIcon, Undo, Redo, Quote, Code, ChevronDown,
-  AlignJustify, Indent as IndentIcon, Outdent as OutdentIcon
+  AlignJustify, Indent as IndentIcon, Outdent as OutdentIcon,
+  Layout, Bookmark
 } from 'lucide-react';
 import { Markdown } from 'tiptap-markdown';
 
@@ -59,7 +60,24 @@ const FontSize = Extension.create({
   },
 });
 
-// Custom Indent extension
+// Custom TableCell with Background Color Support
+const CustomTableCell = TableCell.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      backgroundColor: {
+        default: null,
+        parseHTML: element => element.style.backgroundColor || null,
+        renderHTML: attributes => {
+          if (!attributes.backgroundColor) return {};
+          return { style: `background-color: ${attributes.backgroundColor}` };
+        },
+      },
+    };
+  },
+});
+
+// Custom Indent extension (unchanged)
 const Indent = Extension.create({
   name: 'indent',
   addOptions() {
@@ -141,12 +159,47 @@ const MenuBar = ({ editor }: { editor: any }) => {
     if (url) editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
+  const insertMasterHeader = () => {
+    editor.chain().focus().insertContent(`
+      <table class="psc-master-table">
+        <tbody>
+          <tr><td colspan="2" style="font-weight: 800; font-size: 1.25rem;">लोक सेवा आयोग</td></tr>
+          <tr><td colspan="2" style="font-weight: 700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>
+          <tr class="psc-dark-row"><td colspan="2">२०८१/०४/१२</td></tr>
+          <tr>
+            <td style="text-align: left;">पत्र : द्वितीय</td>
+            <td style="text-align: right;">पूर्णाङ्क : १००</td>
+          </tr>
+          <tr>
+            <td style="text-align: left;">समय: २ घण्टा ३० मिनेट</td>
+            <td></td>
+          </tr>
+          <tr><td colspan="2" style="font-weight: 700;">विषय : सेवा सम्बन्धी</td></tr>
+        </tbody>
+      </table>
+      <p></p>
+    `).run();
+  };
+
+  const insertSectionHeader = () => {
+    const section = window.prompt('Section Name (e.g. खण्ड "ख")', 'खण्ड "ख"');
+    const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
+    if (section) {
+      editor.chain().focus().insertContent(`
+        <div class="psc-section-header">
+          <span>${section}</span>
+          <span class="psc-section-marks">${marks}</span>
+        </div>
+        <p></p>
+      `).run();
+    }
+  };
+
   return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 z-10">
+    <div className="flex flex-wrap gap-1 p-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 z-10 sticky top-0">
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('bold') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Bold"><Bold size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('italic') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Italic"><Italic size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('underline') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Underline"><UnderlineIcon size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('strike') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Strike"><Strikethrough size={18} /></button>
       
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
 
@@ -158,28 +211,28 @@ const MenuBar = ({ editor }: { editor: any }) => {
           title="Font Size"
         >
           <option value="">Size</option>
-          <option value="12px">XS (12)</option>
-          <option value="14px">S (14)</option>
-          <option value="16px">M (16)</option>
-          <option value="20px">L (20)</option>
-          <option value="24px">XL (24)</option>
-          <option value="32px">XXL (32)</option>
+          <option value="12px">12</option>
+          <option value="14px">14</option>
+          <option value="16px">16</option>
+          <option value="18px">18</option>
+          <option value="20px">20</option>
+          <option value="24px">24</option>
         </select>
         <ChevronDown size={12} className="absolute right-2 pointer-events-none text-slate-400" />
       </div>
 
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
-
-      {/* Color Picker (Basic) */}
-      <input 
-        type="color" 
-        onInput={(e: any) => editor.chain().focus().setColor(e.target.value).run()} 
-        className="w-8 h-8 p-1 bg-transparent border-none cursor-pointer"
-        title="Text Color"
-      />
       
-      {/* Highlight Color */}
-      <button type="button" onClick={() => editor.chain().focus().toggleHighlight({ color: '#ffcc00' }).run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('highlight') ? 'bg-amber-100 text-amber-700' : 'text-slate-600 dark:text-slate-400'}`} title="Highlight"><Highlighter size={18} /></button>
+      {/* Templates */}
+      <button type="button" onClick={insertMasterHeader} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-primary-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider" title="Insert PSC Header">
+        <Layout size={14} />
+        <span>PSC Header</span>
+      </button>
+
+      <button type="button" onClick={insertSectionHeader} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-slate-200 dark:bg-slate-800 hover:bg-primary-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider" title="Insert Section Row">
+        <Bookmark size={14} />
+        <span>Section</span>
+      </button>
 
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
 
@@ -190,26 +243,14 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
 
-      <button type="button" onClick={() => editor.chain().focus().indent().run()} className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400" title="Indent"><IndentIcon size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().outdent().run()} className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400" title="Outdent"><OutdentIcon size={18} /></button>
-
-      <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
-
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('bulletList') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Bullet List"><List size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('orderedList') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Ordered List"><ListOrdered size={18} /></button>
 
       <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
 
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('heading', { level: 1 }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400 font-bold'}`} title="H1"><Heading1 size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('heading', { level: 2 }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400 font-bold'}`} title="H2"><Heading2 size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('heading', { level: 3 }) ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400 font-bold'}`} title="H3"><Heading3 size={18} /></button>
-
-      <div className="w-[1px] h-6 bg-slate-300 dark:bg-slate-700 mx-1 self-center" />
-
+      <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400" title="Insert Table"><TableIcon size={18} /></button>
       <button type="button" onClick={setLink} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('link') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Link"><LinkIcon size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('blockquote') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Quote"><Quote size={18} /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ${editor.isActive('codeBlock') ? 'bg-primary-100 text-primary-600' : 'text-slate-600 dark:text-slate-400'}`} title="Code Block"><Code size={18} /></button>
-
+      
       <div className="flex-1" />
       <button type="button" onClick={() => editor.chain().focus().undo().run()} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><Undo size={18} /></button>
       <button type="button" onClick={() => editor.chain().focus().redo().run()} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><Redo size={18} /></button>
@@ -239,7 +280,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
-      TableCell,
+      CustomTableCell,
       Markdown,
     ],
     content: content,
@@ -255,7 +296,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
   });
 
   // Update content if it changes externally (e.g. from DB load)
-  // But ONLY if the content is different to avoid cursor reset.
   useEffect(() => {
     if (editor && content !== editor.getHTML() && !editor.isFocused) {
       editor.commands.setContent(content, { emitUpdate: false });
