@@ -199,22 +199,21 @@ const MenuBar = ({ editor }: { editor: any }) => {
   };
 
   const insertMasterHeader = () => {
-    // Single line HTML to prevent Tiptap from detecting it as a code block
-    // Using explicit alignment classes for official look
-    const html = `<table class="psc-master-table"><tbody>
-      <tr><td colspan="2" class="psc-center psc-bold" style="font-size: 1.25rem;">लोक सेवा आयोग</td></tr>
-      <tr><td colspan="2" class="psc-center psc-bold">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>
-      <tr class="psc-dark-row"><td colspan="2" class="psc-center">२०८१/०४/१२</td></tr>
-      <tr>
-        <td class="psc-left psc-bold">पत्र : द्वितीय</td>
-        <td class="psc-right psc-bold">पूर्णाङ्क : १००</td>
-      </tr>
-      <tr>
-        <td class="psc-left psc-bold">समय: २ घण्टा ३० मिनेट</td>
-        <td></td>
-      </tr>
-      <tr><td colspan="2" class="psc-center psc-bold">विषय : सेवा सम्बन्धी</td></tr>
-    </tbody></table><p></p>`;
+    const tableStyle = 'border:4px solid #000;width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;';
+    const cellBase = 'border:1px solid #000;padding:10px 16px;vertical-align:middle;line-height:1.5;font-family:inherit;';
+    const centerCell = cellBase + 'text-align:center;';
+    const leftCell = cellBase + 'text-align:left;';
+    const rightCell = cellBase + 'text-align:right;';
+    const darkCell = 'border:1px solid #222;padding:8px 16px;text-align:center;background-color:#000;color:#fff;font-weight:800;vertical-align:middle;';
+
+    const html = `<table style="${tableStyle}"><tbody>`
+      + `<tr><td colspan="2" style="${centerCell}font-weight:800;font-size:1.2rem;">लोक सेवा आयोग</td></tr>`
+      + `<tr><td colspan="2" style="${centerCell}font-weight:700;">कृषि विकास बैंक लिमिटेड, प्रशासन, चौथो, लेखपाल पदको<br>खुल्ला प्रतियोगितात्मक लिखित परीक्षा</td></tr>`
+      + `<tr><td colspan="2" style="${darkCell}">२०८१/०४/१२</td></tr>`
+      + `<tr><td style="${leftCell}">पत्र : द्वितीय</td><td style="${rightCell}">पूर्णाङ्क : १००</td></tr>`
+      + `<tr><td colspan="2" style="${leftCell}">समय: २ घण्टा ३० मिनेट</td></tr>`
+      + `<tr><td colspan="2" style="${centerCell}font-weight:700;">विषय : सेवा सम्बन्धी</td></tr>`
+      + `</tbody></table><p></p>`;
     editor.chain().focus().insertContent(html, { parseOptions: { preserveWhitespace: false } }).run();
   };
 
@@ -222,7 +221,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
     const section = window.prompt('Section Name (e.g. खण्ड "क")', 'खण्ड "क"');
     const marks = window.prompt('Marks (e.g. ५० अङ्क)', '५० अङ्क');
     if (section) {
-      const html = `<div class="psc-section-header"><span>${section}</span><span class="psc-section-marks">${marks}</span></div><p></p>`;
+      const html = `<div style="display:flex;justify-content:center;align-items:center;position:relative;margin:3rem 0 1.5rem 0;padding:0.25rem 0;font-weight:800;font-size:1.35rem;color:#000;">`
+        + `<span>${section}</span>`
+        + `<span style="position:absolute;right:0;font-weight:800;font-size:1.1rem;">${marks}</span>`
+        + `</div><p></p>`;
       editor.chain().focus().insertContent(html).run();
     }
   };

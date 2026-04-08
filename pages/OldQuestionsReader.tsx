@@ -318,8 +318,9 @@ export default function OldQuestionsReader() {
                       style={{ fontSize: `${fontSize}px` }}
                       dangerouslySetInnerHTML={{ 
                         __html: DOMPurify.sanitize(displayContent, {
-                          ADD_ATTR: ['colspan', 'rowspan', 'style', 'class'],
-                          ADD_TAGS: ['table', 'tr', 'td', 'th', 'div', 'span', 'br']
+                          ADD_ATTR: ['colspan', 'rowspan', 'style', 'class', 'align', 'valign', 'bgcolor'],
+                          ADD_TAGS: ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'div', 'span', 'br'],
+                          FORCE_BODY: false,
                         }) 
                       }}
                     />
