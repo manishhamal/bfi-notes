@@ -176,12 +176,12 @@
   .professional-doc blockquote p,
   .professional-doc.prose p,
   .professional-doc.tiptap p {
-    text-align: justify !important;
+    text-align: justify; /* Removed !important to allow Tiptap overrides */
     text-justify: inter-word;
     line-height: 1.6 !important;
     break-inside: avoid-column; /* Prevent paragraphs from being split awkwardly */
     margin-bottom: 1.5rem;
-    color: #1e293b !important; /* Force readable slate in light mode */
+    color: #1e293b; /* Removed !important to allow White text in Dark rows */
   }
 
   /* Allow table cells to control their own text alignment AND color */
@@ -346,40 +346,56 @@
   .psc-right, .tiptap .psc-right { text-align: right !important; }
   .psc-bold, .tiptap .psc-bold { font-weight: 800 !important; }
 
-  .psc-dark-row, .tiptap tr.psc-dark-row {
-    background-color: #000 !important;
-    color: #fff !important;
+  /* PSC Master Template Styles */
+  .psc-master-table {
+    border: 4px solid #000 !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 2rem !important;
+    background-color: #fff !important;
+  }
+  .psc-master-table td {
+    border: 1px solid #000 !important;
+    padding: 12px 16px !important;
+    vertical-align: middle !important;
+    color: #000 !important;
+  }
+  .psc-master-table p {
+    margin: 0 !important;
+    line-height: 1.4 !important;
+    color: inherit !important;
+    text-align: inherit !important;
   }
   
-  .psc-dark-row td, .tiptap tr.psc-dark-row td {
+  /* Black header row for the date */
+  .psc-dark-row, .psc-dark-row td {
     background-color: #000 !important;
     color: #fff !important;
-    border-color: #222 !important;
-    text-align: center !important;
-    padding: 8px !important;
+  }
+  .psc-dark-row p {
+    color: #fff !important; 
     font-weight: 800 !important;
+    text-align: center !important;
   }
 
-  .psc-section-header, .tiptap .psc-section-header {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    position: relative !important;
-    margin: 3.5rem 0 2rem 0 !important;
-    padding: 0.5rem 0 !important;
-    font-weight: 800 !important;
-    font-size: 1.45rem !important;
-    text-align: center !important;
-    color: #000 !important;
+  /* Section Header Table (Khokhlov) - Strictly Borderless */
+  .psc-section-table {
+    width: 100% !important;
     border: none !important;
+    border-collapse: collapse !important;
+    margin: 3.5rem 0 1.5rem 0 !important;
+    background-color: transparent !important;
   }
-
-  .psc-section-marks, .tiptap .psc-section-marks {
-    position: absolute !important;
-    right: 0 !important;
-    font-size: 1.1rem !important;
-    font-weight: 800 !important;
+  .psc-section-table td {
+    border: none !important;
+    padding: 8px 0 !important;
+    vertical-align: middle !important;
     color: #000 !important;
+  }
+  .psc-section-table p {
+    margin: 0 !important;
+    color: inherit !important;
+    text-align: inherit !important;
   }
 
   /* Support for Tiptap cell background colors */
@@ -388,25 +404,21 @@
     color: inherit;
   }
 
-  .dark .psc-master-table, .dark .tiptap .psc-master-table {
+  /* Dark mode overrides for high-fidelity papers */
+  .dark .psc-master-table {
     border-color: #e5e7eb !important;
-    background-color: transparent !important;
+    background-color: #1e293b !important;
   }
-  .dark .psc-master-table td, .dark .tiptap .psc-master-table td {
+  .dark .psc-master-table td {
     border-color: #334155 !important;
+    color: #f8fafc !important;
+  }
+  .dark .psc-dark-row, .dark .psc-dark-row td {
+    background-color: #000 !important;
     color: #fff !important;
   }
-  .dark .psc-dark-row, .dark .tiptap tr.psc-dark-row {
-    background-color: #f8fafc !important;
-    color: #000 !important;
-  }
-  .dark .psc-dark-row td, .dark .tiptap tr.psc-dark-row td {
-    background-color: #f8fafc !important;
-    color: #000 !important;
-  }
-  .dark .psc-section-header, .dark .tiptap .psc-section-header,
-  .dark .psc-section-marks, .dark .tiptap .psc-section-marks {
-    color: #fff !important;
+  .dark .psc-section-table td {
+    color: #f8fafc !important;
   }
 }
 
