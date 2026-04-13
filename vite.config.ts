@@ -48,14 +48,7 @@ export default defineConfig(({ mode }) => {
                 if (id.includes('marked') || id.includes('rehype') || id.includes('remark')) {
                   return 'vendor-markdown';
                 }
-                // UI Core
-                if (id.includes('lucide-react')) {
-                  return 'vendor-icons';
-                }
-                if (id.includes('react/') || id.includes('react-dom/') || id.includes('react-router-dom')) {
-                  return 'vendor-react';
-                }
-                return 'vendor';
+                // Only extract extremely heavy libraries, let Vite handle React & Router automatically
               }
             }
           }
