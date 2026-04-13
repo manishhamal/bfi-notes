@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Menu, X, Sun, Moon, Languages } from 'lucide-react';
 import { BLOG_NAME } from '../constants';
@@ -196,8 +196,14 @@ const Layout: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="flex-grow w-full max-w-5xl mx-auto px-6 pt-28 pb-16 flex flex-col justify-center">
-        <Outlet />
+      <main className="flex-grow w-full max-w-5xl mx-auto px-6 pt-28 pb-16 flex flex-col justify-content-start">
+        <Suspense fallback={
+          <div className="flex-grow w-full flex items-center justify-center py-32">
+            <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-800 border-t-primary-500 rounded-full animate-spin" />
+          </div>
+        }>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Footer */}

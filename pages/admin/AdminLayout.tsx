@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Outlet, Navigate, useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../../components/AuthProvider';
 import { supabase } from '../../lib/supabase';
@@ -64,7 +64,13 @@ const AdminLayout: React.FC = () => {
       
       {/* Main Content */}
       <main className="flex-1 p-6 md:p-10 overflow-x-hidden">
-         <Outlet />
+         <Suspense fallback={
+           <div className="flex-grow flex items-center justify-center py-20">
+             <div className="w-8 h-8 border-4 border-slate-200 dark:border-slate-800 border-t-primary-500 rounded-full animate-spin" />
+           </div>
+         }>
+           <Outlet />
+         </Suspense>
       </main>
 
       <ToastContainer position="bottom-right" theme="colored" autoClose={1500} hideProgressBar aria-label="Toast Container" />
