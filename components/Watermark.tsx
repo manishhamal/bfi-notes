@@ -5,7 +5,7 @@ interface WatermarkProps {
   opacity?: number;
 }
 
-const Watermark: React.FC<WatermarkProps> = ({ opacity = 0.04 }) => {
+const Watermark: React.FC<WatermarkProps> = ({ opacity = 0.15 }) => {
   const { user, profile } = useAuth();
   
   const watermarkText = useMemo(() => {
@@ -19,15 +19,15 @@ const Watermark: React.FC<WatermarkProps> = ({ opacity = 0.04 }) => {
 
   const backgroundUrl = useMemo(() => {
     const svg = `
-      <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+      <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
         <text 
           x="50%" 
           y="50%" 
-          transform="translate(150, 150) rotate(-45) translate(-150, -150)"
-          fill="rgb(128, 128, 128)"
+          transform="translate(100, 100) rotate(-45) translate(-100, -100)"
+          fill="rgb(150, 150, 150)"
           font-family="system-ui, -apple-system, sans-serif" 
-          font-size="15" 
-          font-weight="600" 
+          font-size="16" 
+          font-weight="700" 
           text-anchor="middle"
           dominant-baseline="middle"
         >

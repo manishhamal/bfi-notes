@@ -100,23 +100,17 @@
   }
 
   .document-paper {
-    background-color: #ffffff;
-    color: #0f172a !important; /* Force deep slate for readability */
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.04),
-      0 10px 40px -10px rgba(0, 0, 0, 0.12),
-      0 2px 6px -2px rgba(0, 0, 0, 0.06);
-    border-radius: 4px;
-    padding: clamp(2rem, 4vw, 3.25rem) clamp(1.75rem, 4vw, 3.5rem);
+    background-color: transparent;
+    color: inherit;
+    padding: clamp(1rem, 4vw, 2rem) 0;
     margin: 0 auto;
-    border: 1px solid rgba(15, 23, 42, 0.08);
     position: relative;
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   @media (max-width: 768px) {
     .document-paper {
-      padding: 1.5rem 1.25rem;
+      padding: 1rem 0;
       border-radius: 0;
       border-left: none;
       border-right: none;
@@ -125,10 +119,9 @@
   }
 
   .dark .document-paper {
-    background-color: #1a1a1a;
-    color: #e5e5e5;
-    border-color: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   /* Dark mode: prevent TipTap inline ink colors from going invisible */
@@ -138,12 +131,9 @@
 
   /* Sepia reader: warm paper inside the sheet */
   .document-paper.document-paper-sepia {
-    background-color: #f0e6d2;
-    color: #433422 !important; /* Darker sepia ink for better contrast */
-    border-color: rgba(91, 70, 54, 0.12);
-    box-shadow:
-      0 1px 2px rgba(91, 70, 54, 0.06),
-      0 10px 36px -12px rgba(91, 70, 54, 0.15);
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   .document-paper.document-paper-sepia :where(p, li, span, h1, h2, h3) {
