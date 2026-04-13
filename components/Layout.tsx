@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, Languages } from 'lucide-react';
 import { BLOG_NAME } from '../constants';
+import { useTranslation } from 'react-i18next';
 
 const Layout: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,12 @@ const Layout: React.FC = () => {
     return false;
   });
   const { pathname, hash } = useLocation();
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'en' ? 'np' : 'en';
+    i18n.changeLanguage(nextLang);
+  };
 
   useEffect(() => {
     // Handle scrolling on route or hash change
@@ -77,10 +84,10 @@ const Layout: React.FC = () => {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Study Notes', path: '/articles' },
-    { name: 'Authors', path: '/authors' },
-    { name: 'About PSC Prep', path: '/about' },
+    { name: t('Home'), path: '/' },
+    { name: t('Study Notes'), path: '/articles' },
+    { name: t('Authors'), path: '/authors' },
+    { name: t('About PSC Prep'), path: '/about' },
   ];
 
   return (
@@ -118,28 +125,47 @@ const Layout: React.FC = () => {
               </NavLink>
             ))}
             
-            <button 
-              onClick={toggleTheme}
-              className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 p-2 rounded-full text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                aria-label="Toggle language"
+              >
+                <Languages size={18} />
+                <span className="text-xs font-bold uppercase">{i18n.language || 'EN'}</span>
+              </button>
+
+              <button 
+                onClick={toggleTheme}
+                className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                aria-label={t('Theme Toggle')}
+              >
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center space-x-4 md:hidden">
+          <div className="flex items-center space-x-2 md:hidden">
+            <button 
+              onClick={toggleLanguage}
+              className="flex items-center gap-1 p-2 text-slate-600 dark:text-slate-400"
+              aria-label="Toggle language"
+            >
+              <Languages size={20} />
+              <span className="text-[10px] font-bold uppercase">{i18n.language || 'EN'}</span>
+            </button>
             <button 
               onClick={toggleTheme}
               className="p-2 text-slate-600 dark:text-slate-400"
-              aria-label="Toggle theme"
+              aria-label={t('Theme Toggle')}
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-slate-900 dark:text-white"
-              aria-label="Toggle menu"
+              aria-label={t('Menu Toggle')}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
