@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import FadeIn from '../components/FadeIn';
 import { supabase } from '../lib/supabase';
+import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
 import DOMPurify from 'dompurify';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -171,6 +172,7 @@ export default function OldQuestionsReader() {
 
   return (
     <div className={`h-screen flex flex-col overflow-hidden transition-colors duration-500 ${themeColors[theme]}`}>
+      <Watermark />
       <motion.header 
         className={`shrink-0 z-40 transition-all duration-300 ${navColors[theme]} backdrop-blur-md border-b`}
         initial={{ y: 0 }}

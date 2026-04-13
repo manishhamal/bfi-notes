@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import FadeIn from '../components/FadeIn';
 import { supabase } from '../lib/supabase';
+import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -175,6 +176,7 @@ export default function SyllabusReader() {
         'bg-slate-50 text-slate-800'
       }`}
     >
+      <Watermark />
       {/* Top Navigation Bar */}
       <motion.header 
         className={`shrink-0 z-40 transition-all duration-300 ${

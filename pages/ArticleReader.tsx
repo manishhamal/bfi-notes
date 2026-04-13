@@ -21,6 +21,7 @@ import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import Watermark from '../components/Watermark';
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
@@ -224,6 +225,7 @@ const ArticleReader: React.FC = () => {
         title={currentLanguage === 'en' ? article.title : (article.title_ne || article.title)}
         description={article.excerpt || `Read this article on BFI Notes.`}
       />
+      <Watermark />
       {/* Top Navigation Bar */}
       <motion.nav 
         initial={{ y: -100 }}
