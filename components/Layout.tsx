@@ -106,7 +106,7 @@ const Layout: React.FC = () => {
               }`
             }
           >
-            {BLOG_NAME}
+            {t('BFI Notes')}
           </NavLink>
 
           {/* Desktop Nav */}
@@ -210,7 +210,7 @@ const Layout: React.FC = () => {
       <footer className="py-12 px-6 border-t border-slate-100 dark:border-slate-900 mt-auto bg-slate-50/50 dark:bg-slate-950/50">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm text-slate-500 dark:text-slate-400">
           <div className="mb-4 md:mb-0 font-medium">
-             &copy; {new Date().getFullYear()} {BLOG_NAME}.
+             &copy; {new Date().getFullYear()} {t('BFI Notes')}.
           </div>
           <div className="flex space-x-8">
             <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Twitter</a>

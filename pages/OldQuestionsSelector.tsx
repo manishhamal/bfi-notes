@@ -12,8 +12,8 @@ export default function OldQuestionsSelector() {
 
   return (
     <BankLevelSelector 
-      title="Old Questions Collection"
-      subtitle="Past paper collections organized by bank and level. Select one to proceed."
+      title="Old Questions Selector Title"
+      subtitle="Old Questions Selector Sub"
       baseRoute="/old-questions"
       onSelect={handleSelect}
       initialBank={bank}

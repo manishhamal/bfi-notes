@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import ArticleCard from '../components/ArticleCard';
+import { useTranslation } from 'react-i18next';
 
 interface AuthorProfile {
   name: string;
@@ -21,6 +22,7 @@ const Authors: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedAuthorParam = searchParams.get('name');
+  const { t } = useTranslation();
   
   const [authors, setAuthors] = useState<AuthorProfile[]>([]);
   const [allArticles, setAllArticles] = useState<any[]>([]);
@@ -33,7 +35,10 @@ const Authors: React.FC = () => {
       
       // 1. Topic/Category match first
       const allTopics = Array.from(new Set(authors.flatMap(a => a.topics || []))) as string[];
-      const matchedTopic = allTopics.find(t => t.toLowerCase() === query);
+      const matchedTopic = allTopics.find(topic => 
+        topic.toLowerCase() === query || 
+        t(topic).toLowerCase() === query
+      );
       
       if (matchedTopic) {
         navigate(`/articles?category=${encodeURIComponent(matchedTopic)}`);
@@ -42,7 +47,7 @@ const Authors: React.FC = () => {
       }
 
       // 2. Article Title match (Deep search)
-      const matchedArticle = allArticles.find(a => (a.title || '').toLowerCase().includes(query));
+      const matchedArticle = allArticles.find(a => (a.title || '').toLowerCase().includes(query) || (a.title_ne || '').toLowerCase().includes(query));
       if (matchedArticle) {
         navigate(`/articles/${matchedArticle.id}`);
         setSearchQuery('');
@@ -69,7 +74,7 @@ const Authors: React.FC = () => {
     const fetchData = async () => {
       const { data, error } = await supabase
         .from('articles')
-        .select('id, title, category, author_name, author_avatar, author_bio, date, tags')
+        .select('id, title, title_ne, category, author_name, author_avatar, author_bio, date, tags')
         .order('date', { ascending: false });
 
       if (!error && data) {
@@ -97,6 +102,9 @@ const Authors: React.FC = () => {
           // Index article title
           if (article.title && !profile.noteTitles.includes(article.title)) {
             profile.noteTitles.push(article.title);
+          }
+          if (article.title_ne && !profile.noteTitles.includes(article.title_ne)) {
+            profile.noteTitles.push(article.title_ne);
           }
           
           // Index category as topic
@@ -126,11 +134,11 @@ const Authors: React.FC = () => {
     const lowerQuery = searchQuery.toLowerCase().trim();
     return authors.filter(a => 
       (a.name || '').toLowerCase().includes(lowerQuery) || 
-      (a.topics || []).some(t => t.toLowerCase().includes(lowerQuery)) ||
-      (a.noteTitles || []).some(t => t.toLowerCase().includes(lowerQuery)) ||
-      (a.noteTags || []).some(t => t.toLowerCase().includes(lowerQuery))
+      (a.topics || []).some(topic => topic.toLowerCase().includes(lowerQuery) || t(topic).toLowerCase().includes(lowerQuery)) ||
+      (a.noteTitles || []).some(title => title.toLowerCase().includes(lowerQuery)) ||
+      (a.noteTags || []).some(tag => tag.toLowerCase().includes(lowerQuery))
     );
-  }, [authors, searchQuery]);
+  }, [authors, searchQuery, t]);
 
   const selectedAuthor = useMemo(() => {
     if (!selectedAuthorParam) return null;
@@ -166,7 +174,7 @@ const Authors: React.FC = () => {
   return (
     <div className="pb-20">
       <SEO 
-        title={selectedAuthor ? `${selectedAuthor.name} | Authors` : 'Authors'}
+        title={selectedAuthor ? `${selectedAuthor.name} | ${t('Authors')}` : t('Authors')}
         description={selectedAuthor ? `Read notes and study materials by ${selectedAuthor.name}, a BFI Subject Matter Expert.` : 'Meet the contributors and mentors providing top-quality study notes for banking exams in Nepal.'}
       />
       <header className="mb-10">
@@ -174,7 +182,7 @@ const Authors: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1.5 px-0.5">
-                Authors
+                {t('Authors')}
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg">
                 A collection of notes and Materials from fellow students and mentors walking the same path.
@@ -185,7 +193,7 @@ const Authors: React.FC = () => {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors" size={16} />
               <input 
                 type="text" 
-                placeholder="Search authors or topics..."
+                placeholder={t('Search Authors')}
                 value={searchQuery}
                 onKeyDown={handleSearchKeyDown}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -216,7 +224,7 @@ const Authors: React.FC = () => {
                   onClick={() => handleSelectAuthor(null)}
                   className="w-full md:w-auto px-4 py-2 flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all text-xs font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 md:border-none shadow-sm md:shadow-none"
                 >
-                  <ArrowRight size={14} className="rotate-180" /> Back to Authors
+                  <ArrowRight size={14} className="rotate-180" /> {t('Back to Authors')}
                 </button>
               </div>
               
@@ -242,7 +250,7 @@ const Authors: React.FC = () => {
                   <div className="flex flex-wrap justify-center md:justify-start gap-2">
                     {selectedAuthor.topics.map(topic => (
                       <span key={topic} className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded-lg border border-slate-200/50 dark:border-slate-700/50 uppercase tracking-wider">
-                        #{topic}
+                        #{t(topic)}
                       </span>
                     ))}
                   </div>
@@ -252,7 +260,7 @@ const Authors: React.FC = () => {
               <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-slate-100 dark:border-slate-800">
                 <h3 className="text-base md:text-lg font-bold mb-6 md:mb-8 flex items-center justify-center md:justify-start gap-2 text-slate-900 dark:text-white">
                   <BookOpen size={18} className="text-primary-500" />
-                  Notes by {selectedAuthor.name}
+                  {t('Notes by')} {selectedAuthor.name}
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:gap-6">
                   {selectedAuthorArticles.map((article, idx) => (
@@ -279,7 +287,7 @@ const Authors: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredAuthors.map((author) => {
               const matchedTopics = searchQuery.trim() 
-                ? author.topics.filter(t => t.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+                ? author.topics.filter(topic => topic.toLowerCase().includes(searchQuery.toLowerCase().trim()) || t(topic).toLowerCase().includes(searchQuery.toLowerCase().trim()))
                 : author.topics.slice(0, 2);
 
               return (
@@ -315,7 +323,7 @@ const Authors: React.FC = () => {
                     <div className="flex flex-wrap gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                       {matchedTopics.map((topic) => (
                         <span key={topic} className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded uppercase">
-                          {topic}
+                          {t(topic)}
                         </span>
                       ))}
                       {author.topics.length > matchedTopics.length && (
@@ -333,12 +341,12 @@ const Authors: React.FC = () => {
           
           {filteredAuthors.length === 0 && (
             <div className="py-20 text-center text-slate-500 font-mono text-sm border-2 border-dashed border-slate-100 dark:border-slate-900 rounded-3xl">
-              <p>No authors found matching your search.</p>
+              <p>{t('No authors found')}</p>
               <button 
                 onClick={() => setSearchQuery('')}
                 className="mt-4 text-xs font-extrabold uppercase tracking-widest text-primary-600 hover:text-primary-500 transition-colors"
               >
-                Clear all filters
+                {t('Clear all filters')}
               </button>
             </div>
           )}

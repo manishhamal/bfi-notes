@@ -42,6 +42,10 @@ export interface Article {
   authorName?: string;
   authorAvatar?: string;
   authorBio?: string;
+  title_ne?: string;
+  excerpt_ne?: string;
+  content_ne?: string;
+  tags_ne?: string[];
 }
 
 export interface OldQuestion {

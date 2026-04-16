@@ -7,6 +7,7 @@ import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import { Category } from '../types';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const Articles: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Articles: React.FC = () => {
   const bankParam = searchParams.get('bank');
   const levelParam = searchParams.get('level');
   const viewParam = searchParams.get('view');
+  const { t } = useTranslation();
   
   const [activeCategory, setActiveCategory] = useState<string>(categoryParam || Category.All);
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,7 +64,9 @@ const Articles: React.FC = () => {
 
       const matchesSearch = 
         article.title?.toLowerCase().includes(searchLower) || 
+        article.title_ne?.toLowerCase().includes(searchLower) ||
         article.excerpt?.toLowerCase().includes(searchLower) ||
+        article.excerpt_ne?.toLowerCase().includes(searchLower) ||
         (article.authorName?.toLowerCase().includes(searchLower)) ||
         (article.tags || []).some((tag: string) => tag.toLowerCase().includes(searchLower));
         
@@ -71,10 +75,10 @@ const Articles: React.FC = () => {
   }, [activeCategory, bankParam, levelParam, searchQuery, articles]);
 
   const seoTitle = useMemo(() => {
-    if (activeCategory !== Category.All) return activeCategory;
-    if (bankParam || levelParam) return [bankParam, levelParam].filter(Boolean).join(' ');
-    return 'Study Notes';
-  }, [activeCategory, bankParam, levelParam]);
+    if (activeCategory !== Category.All) return t(activeCategory);
+    if (bankParam || levelParam) return [bankParam, levelParam].filter(Boolean).map(val => t(val)).join(' ');
+    return t('Study Notes');
+  }, [activeCategory, bankParam, levelParam, t]);
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);
@@ -107,7 +111,10 @@ const Articles: React.FC = () => {
       const query = searchQuery.toLowerCase().trim();
       
       // 1. Check for Category match
-      const matchedCategory = Object.values(Category).find(cat => cat.toLowerCase() === query);
+      const matchedCategory = Object.values(Category).find(cat => 
+        cat.toLowerCase() === query || 
+        t(cat).toLowerCase() === query
+      );
       if (matchedCategory) {
         handleCategoryChange(matchedCategory);
         setSearchQuery('');
@@ -164,7 +171,7 @@ const Articles: React.FC = () => {
     <div className="pb-24">
       <SEO 
         title={seoTitle} 
-        description={`Browse our collection of ${seoTitle} study materials, notes, and solutions for banking exams.`}
+        description={`${t('Browse our collection of')} ${seoTitle} ${t('study materials, notes, and solutions for banking exams.')}`}
       />
       <FadeIn>
         <button
@@ -172,13 +179,13 @@ const Articles: React.FC = () => {
           className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-fit shadow-sm"
         >
           <ArrowLeft size={16} />
-          Go Back
+          {t('Go Back')}
         </button>
 
         {isDedicatedView && (
           <div className="mb-6 animate-in fade-in slide-in-from-left-4 duration-500">
-             <div className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] mb-1">Subject Collection</div>
-             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{activeCategory}</h1>
+             <div className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] mb-1">{t('Subject Collection')}</div>
+             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t(activeCategory)}</h1>
           </div>
         )}
 
@@ -194,7 +201,7 @@ const Articles: React.FC = () => {
                     : 'text-slate-900 dark:text-white hover:bg-slate-200/30 dark:hover:bg-slate-800/30'
                 }`}
               >
-                BFI Notes
+                {t('BFI Notes')}
               </button>
 
               {/* Category Tabs - Hidden on mobile when search is open */}
@@ -207,7 +214,7 @@ const Articles: React.FC = () => {
                 className={`flex-1 min-w-0 flex items-center h-full overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain cursor-grab active:cursor-grabbing select-none transition-opacity duration-200 ${isDragging ? 'scroll-auto' : 'scroll-smooth'} ${isSearchOpen ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}
               >
                 {Object.values(Category).filter(cat => cat !== Category.All).map((cat) => {
-                  const isMatchedBySearch = searchQuery.trim() && cat.toLowerCase().includes(searchQuery.toLowerCase().trim());
+                  const isMatchedBySearch = searchQuery.trim() && (cat.toLowerCase().includes(searchQuery.toLowerCase().trim()) || t(cat).toLowerCase().includes(searchQuery.toLowerCase().trim()));
                   return (
                     <button
                       key={cat}
@@ -220,7 +227,7 @@ const Articles: React.FC = () => {
                             : 'text-slate-500 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      {cat}
+                      {t(cat)}
                       {isMatchedBySearch && <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />}
                     </button>
                   );
@@ -233,7 +240,7 @@ const Articles: React.FC = () => {
                   <Search size={14} className="text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search every subject..."
+                    placeholder={t('Search every subject...')}
                     value={searchQuery}
                     onKeyDown={handleSearchKeyDown}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -265,7 +272,7 @@ const Articles: React.FC = () => {
                         <input
                           ref={searchInputRef}
                           type="text"
-                          placeholder="Search..."
+                          placeholder={t('Search...')}
                           value={searchQuery}
                           onKeyDown={handleSearchKeyDown}
                           onChange={(e) => setSearchQuery(e.target.value)}
@@ -294,7 +301,7 @@ const Articles: React.FC = () => {
                </div>
                <input
                  type="text"
-                 placeholder={`Search in ${activeCategory}...`}
+                 placeholder={`${t('Search in')} ${t(activeCategory)}...`}
                  value={searchQuery}
                  onKeyDown={handleSearchKeyDown}
                  onChange={(e) => setSearchQuery(e.target.value)}
@@ -317,10 +324,10 @@ const Articles: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">
-                  Showing Solutions For
+                  {t('Showing Solutions For')}
                 </h3>
                 <div className="text-lg font-bold text-slate-900 dark:text-white leading-none">
-                  {[bankParam, levelParam].filter(Boolean).join(' • ')}
+                  {[bankParam, levelParam].filter(Boolean).map(val => t(val)).join(' • ')}
                 </div>
               </div>
             </div>
@@ -332,7 +339,7 @@ const Articles: React.FC = () => {
               }}
               className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition-colors bg-white dark:bg-slate-900 px-4 py-2 rounded-full shadow-sm"
             >
-              Clear Filter
+              {t('Clear Filter')}
             </button>
           </motion.div>
         )}
@@ -365,12 +372,12 @@ const Articles: React.FC = () => {
         </div>
       ) : !loading ? (
         <div className="py-20 text-center text-slate-500 font-mono text-sm">
-          <p>No entries found.</p>
+          <p>{t('No entries found.')}</p>
           <button 
             onClick={() => {setSearchQuery(''); setActiveCategory(Category.All)}}
             className="mt-4 text-slate-900 dark:text-slate-100 hover:underline"
           >
-            Clear filters
+            {t('Clear filters')}
           </button>
         </div>
       ) : null}

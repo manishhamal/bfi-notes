@@ -3,41 +3,30 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Category } from '../../types';
 import { BookOpen, FileText, ClipboardList, PenTool, ArrowRight } from 'lucide-react';
-
-type SubjectKind = 'syllabus' | 'old-questions' | 'notes' | 'old-solutions';
-
-const SUBJECT_KINDS: Array<{ kind: Exclude<SubjectKind, 'syllabus'>; title: string; subtitle: string }> = [
-  { kind: 'old-questions', title: 'Old Question Collections', subtitle: 'Topic-wise collections' },
-  { kind: 'notes', title: 'Notes', subtitle: 'Quick study material' },
-  { kind: 'old-solutions', title: 'Old Question Solutions', subtitle: 'Solved answers' },
-];
+import { useTranslation } from 'react-i18next';
 
 function isValidCategory(category: string | undefined): category is Category {
   return category ? (Object.values(Category) as string[]).includes(category) && category !== Category.All : false;
 }
 
-
-
 export default function SubjectCategoryHub() {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const normalizedCategory = useMemo(() => (category ? category : ''), [category]);
   const [isValid, setIsValid] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setIsValid(isValidCategory(normalizedCategory));
   }, [normalizedCategory]);
 
-
-
   if (!isValid) {
     return (
       <div className="min-h-screen px-4 py-16">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Subject not found</h1>
-          <p className="text-slate-600 dark:text-slate-300">Choose a valid subject from the home page.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('No entries found.')}</h1>
+          <p className="text-slate-600 dark:text-slate-300">{t('No papers desc')}</p>
         </div>
       </div>
     );
@@ -49,10 +38,10 @@ export default function SubjectCategoryHub() {
         <div className="flex items-end justify-between gap-4 mb-6">
           <div>
             <div className="text-[10px] uppercase tracking-widest font-bold text-primary-500 mb-1">
-              Subject
+              {t('Banking')}
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {normalizedCategory}
+              {t(normalizedCategory)}
             </h1>
           </div>
         </div>
@@ -72,10 +61,10 @@ export default function SubjectCategoryHub() {
               </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Syllabus PDF
+              {t('Syllabus Title')}
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Official banking levels syllabus (4th, 5th, 6th) for RBB, NRB, NBL, and ADBL.
+              {t('Syllabus Desc')}
             </p>
           </button>
 
@@ -93,10 +82,10 @@ export default function SubjectCategoryHub() {
               </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Study Notes
+              {t('Notes Title')}
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              In-depth study material and articles specifically for {normalizedCategory}.
+              {t('Notes Desc')}
             </p>
           </button>
 
@@ -114,10 +103,10 @@ export default function SubjectCategoryHub() {
               </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Old Question Collections
+              {t('Old Questions Title')}
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Browse previous years' questions organized by bank and level.
+              {t('Old Questions Desc')}
             </p>
           </button>
           
@@ -135,10 +124,10 @@ export default function SubjectCategoryHub() {
               </div>
             </div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Old Question Solutions
+              {t('Solutions Title')}
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Expert solutions for previous exam questions from various banks.
+              {t('Solutions Desc')}
             </p>
           </button>
         </div>

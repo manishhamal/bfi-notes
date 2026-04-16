@@ -15,6 +15,7 @@ import FadeIn from '../components/FadeIn';
 import { supabase } from '../lib/supabase';
 import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { useTranslation } from 'react-i18next';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -28,6 +29,7 @@ type ReaderTheme = 'light' | 'sepia' | 'dark';
 export default function SyllabusReader() {
   const { bank, level } = useParams<{ bank: string; level: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -153,16 +155,16 @@ export default function SyllabusReader() {
         <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 text-slate-400">
            <BookOpen size={32} />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Syllabus Not Found</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">{t('Syllabus Not Found')}</h1>
         <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md">
-          A syllabus for {bank} {level} has not been uploaded yet. Please check back later or contact the administrator.
+          {t('No papers desc')}
         </p>
         <button 
           onClick={() => navigate(-1)} 
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg"
         >
           <ArrowLeft size={20} />
-          Go Back
+          {t('Go Back')}
         </button>
       </div>
     );
@@ -193,14 +195,14 @@ export default function SyllabusReader() {
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(`/syllabus/${encodeURIComponent(bank!)}`)}>
               <div className="flex items-center gap-2 text-sm font-bold text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm">
                 <ArrowLeft size={16} />
-                <span>Go Back</span>
+                <span>{t('Go Back')}</span>
               </div>
               <div className="hidden sm:flex flex-col border-l border-slate-200 dark:border-slate-700 pl-4">
                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">
-                   Bank
+                   {t('Banking')}
                  </span>
                  <span className="font-bold tracking-tight leading-none">
-                   {bank} {level}
+                   {t(bank || '')} {t(level || '')}
                  </span>
               </div>
             </div>
@@ -214,7 +216,7 @@ export default function SyllabusReader() {
                     theme === 'sepia' ? 'hover:bg-[#e8dec7]' : 
                     'hover:bg-slate-100'
                   } ${isMenuOpen ? (theme === 'dark' ? 'bg-slate-800' : theme === 'sepia' ? 'bg-[#e8dec7]' : 'bg-slate-100') : ''}`}
-                  title="Display Settings"
+                  title={t('Reader Settings')}
                 >
                   <Settings size={20} />
                 </button>
@@ -237,7 +239,7 @@ export default function SyllabusReader() {
                         <div>
                           <div className={`text-xs font-bold uppercase tracking-wider mb-3 ${
                              theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
-                          }`}>Theme</div>
+                          }`}>{t('Appearance')}</div>
                           <div className="grid grid-cols-3 gap-2">
                             <button 
                               onClick={() => setTheme('light')}
@@ -248,7 +250,7 @@ export default function SyllabusReader() {
                               } bg-white text-slate-900`}
                             >
                               <Sun size={20} />
-                              <span className="text-xs font-bold">Light</span>
+                              <span className="text-xs font-bold">{t('Light')}</span>
                             </button>
                             <button 
                               onClick={() => setTheme('sepia')}
@@ -259,7 +261,7 @@ export default function SyllabusReader() {
                               } bg-[#faf4e8] text-[#5c4b37]`}
                             >
                               <BookOpen size={20} />
-                              <span className="text-xs font-bold">Sepia</span>
+                              <span className="text-xs font-bold">{t('Sepia')}</span>
                             </button>
                             <button 
                               onClick={() => setTheme('dark')}
@@ -270,7 +272,7 @@ export default function SyllabusReader() {
                               } bg-slate-950 text-slate-300`}
                             >
                               <Moon size={20} />
-                              <span className="text-xs font-bold">Dark</span>
+                              <span className="text-xs font-bold">{t('Dark')}</span>
                             </button>
                           </div>
                         </div>
@@ -290,7 +292,7 @@ export default function SyllabusReader() {
                   theme === 'sepia' ? 'hover:bg-[#e8dec7]' : 
                   'hover:bg-slate-100'
                 }`}
-                title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                title={isFullscreen ? t("Exit Fullscreen") : t("Enter Fullscreen")}
               >
                 {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
               </button>
@@ -311,18 +313,18 @@ export default function SyllabusReader() {
             {/* Context Breadcrumb */}
             <div className="flex items-center gap-2 mb-8 justify-center">
                <span className={`text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-primary-400' : 'text-primary-600'}`}>
-                 {bank} {level}
+                 {t(bank || '')} {t(level || '')}
                </span>
                <ChevronRight size={14} className={theme === 'dark' ? 'text-slate-600' : 'text-slate-400'} />
                <span className={`text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
-                 Syllabus
+                 {t('Syllabus Title')}
                </span>
             </div>
             
             {/* Header Content */}
             <header className="mb-12 text-center">
               <h1 className={`text-4xl md:text-5xl font-bold tracking-tight mb-8 leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'} font-serif`}>
-                Syllabus
+                {t('Syllabus Title')}
               </h1>
             </header>
 
@@ -342,12 +344,12 @@ export default function SyllabusReader() {
                 loading={
                   <div className="flex flex-col items-center justify-center p-20 text-slate-400">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-600 mb-4"></div>
-                    <p className="font-medium animate-pulse">Processing Syllabus PDF...</p>
+                    <p className="font-medium animate-pulse">{t('Processing PDF')}</p>
                   </div>
                 }
                 error={
                   <div className="p-10 text-center text-red-500">
-                    <p className="font-bold">Failed to load PDF.</p>
+                    <p className="font-bold">{t('Failed to load PDF')}</p>
                     <p className="text-sm">The syllabus file might be corrupted or missing.</p>
                   </div>
                 }
@@ -360,7 +362,7 @@ export default function SyllabusReader() {
                       width={containerWidth ? containerWidth : undefined}
                       renderTextLayer={false}
                       renderAnnotationLayer={false}
-                      loading={<div className="h-[800px] w-full bg-slate-50 animate-pulse flex items-center justify-center text-slate-300">Rendering...</div>}
+                      loading={<div className="h-[800px] w-full bg-slate-50 animate-pulse flex items-center justify-center text-slate-300">{t('Rendering')}</div>}
                     />
                   </div>
                 ))}

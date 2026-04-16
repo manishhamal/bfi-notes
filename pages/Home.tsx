@@ -5,9 +5,11 @@ import SEO from '../components/SEO';
 import { Category } from '../types';
 import { BookOpen, Search, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
   const categories = Object.values(Category).filter(cat => cat !== Category.All);
+  const { t } = useTranslation();
   
   const [latestArticles, setLatestArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ const Home: React.FC = () => {
     const fetchLatest = async () => {
       const { data } = await supabase
         .from('articles')
-        .select(`id, title, category, excerpt, date, read_time, author_name`)
+        .select(`id, title, title_ne, category, excerpt, excerpt_ne, date, read_time, author_name`)
         .order('date', { ascending: false })
         .limit(5);
       
@@ -32,22 +34,23 @@ const Home: React.FC = () => {
   }, []);
 
   const memoizedArticles = useMemo(() => latestArticles, [latestArticles]);
+  const { i18n } = useTranslation();
 
   return (
     <div className="pb-24">
       <SEO 
-        title="Home" 
-        description="BFI Notes: By Students, For Students. High-quality study materials for Banking and Finance exams in Nepal." 
+        title={t('Home')} 
+        description={`BFI Notes: ${t('BY Students, For Students.')} High-quality study materials for Banking and Finance exams in Nepal.`} 
       />
       
       <FadeIn>
         <div className="text-left space-y-6 mb-20">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
-            BFI Notes: <span className="text-primary-600 dark:text-primary-400">BY Students, For Students.</span>
+            {t('BFI Notes')}: <span className="text-primary-600 dark:text-primary-400">{t('BY Students, For Students.')}</span>
           </h1>
           
           <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
-            Our platform provides clean, readable formats that make your study sessions more efficient. No more 'deciphering'—just direct, searchable access to the topics you need.
+            {t('Home Subtitle')}
           </p>
 
           <div className="flex flex-wrap gap-4 pt-4">
@@ -55,7 +58,7 @@ const Home: React.FC = () => {
               to="/materials" 
               className="px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all flex items-center gap-3 shadow-xl shadow-primary-500/10 active:scale-95"
             >
-              All Materials <ArrowRight size={20} />
+              {t('All Materials')} <ArrowRight size={20} />
             </Link>
           </div>
         </div>
@@ -65,7 +68,7 @@ const Home: React.FC = () => {
         <section className="space-y-8 mb-20">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-widest">
-              Subject Categories
+              {t('Subject Categories')}
             </h2>
           </div>
           
@@ -78,7 +81,7 @@ const Home: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                    {cat}
+                    {t(cat)}
                   </h3>
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-primary-500 transition-all group-hover:translate-x-1" />
                 </div>
@@ -92,41 +95,45 @@ const Home: React.FC = () => {
         <section className="space-y-8">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-widest">
-              Latest Study Materials
+              {t('Latest Study Materials')}
             </h2>
             <Link to="/articles" className="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline">
-              View All
+              {t('View All')}
             </Link>
           </div>
           
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {loading ? (
-               <div className="py-4 text-slate-500 animate-pulse">Loading latest notes...</div>
+               <div className="py-4 text-slate-500 animate-pulse">{t('Loading latest notes')}</div>
             ) : memoizedArticles.length === 0 ? (
-               <div className="py-4 text-slate-500">No notes published yet.</div>
+               <div className="py-4 text-slate-500">{t('No notes found.')}</div>
             ) : null}
-            {memoizedArticles.map((article) => (
-              <li key={article.id} className="group">
-                <Link to={`/articles/${article.id}`} className="py-6 block">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">
-                        {article.category}
+            {memoizedArticles.map((article) => {
+              const displayTitle = (i18n.language === 'np' && article.title_ne) ? article.title_ne : article.title;
+              const displayExcerpt = (i18n.language === 'np' && article.excerpt_ne) ? article.excerpt_ne : article.excerpt;
+              return (
+                <li key={article.id} className="group">
+                  <Link to={`/articles/${article.id}`} className="py-6 block">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">
+                          {t(article.category)}
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                          {displayTitle}
+                        </h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">
+                          {displayExcerpt}
+                        </p>
                       </div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                        {article.title}
-                      </h3>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">
-                        {article.excerpt}
-                      </p>
+                      <div className="text-xs font-mono text-slate-400 whitespace-nowrap text-right">
+                        {new Date(article.date).toLocaleDateString()} • {article.read_time || '5 min read'}
+                      </div>
                     </div>
-                    <div className="text-xs font-mono text-slate-400 whitespace-nowrap text-right">
-                      {new Date(article.date).toLocaleDateString()} • {article.read_time || '5 min read'}
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </section>
       </FadeIn>

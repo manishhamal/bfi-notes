@@ -22,6 +22,7 @@ import { supabase } from '../lib/supabase';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Watermark from '../components/Watermark';
+import { useTranslation } from 'react-i18next';
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
 
@@ -46,6 +47,7 @@ function readStoredReaderFontSize(): number {
 const ArticleReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   
   const [article, setArticle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,6 @@ const ArticleReader: React.FC = () => {
   const [theme, setTheme] = useState<ReaderTheme>('light');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'ne'>('en');
   const [readingProgress, setReadingProgress] = useState(0);
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollYRef = useRef(0);
@@ -168,7 +169,7 @@ const ArticleReader: React.FC = () => {
     return (
       <div className="h-screen flex items-center justify-center bg-white dark:bg-slate-950">
         <div className="text-center font-bold text-slate-500 animate-pulse">
-          Loading Note...
+          {t('Loading Note')}
         </div>
       </div>
     );
@@ -178,9 +179,9 @@ const ArticleReader: React.FC = () => {
     return (
       <div className="h-screen flex items-center justify-center bg-white dark:bg-slate-950">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Note not found</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('Note not found')}</h2>
           <button onClick={() => navigate('/articles')} className="text-primary-600 hover:underline">
-            Back to notes
+            {t('Back to notes')}
           </button>
         </div>
       </div>
@@ -200,8 +201,9 @@ const ArticleReader: React.FC = () => {
   };
 
   const toggleLanguage = () => {
-    setCurrentLanguage(prev => prev === 'en' ? 'ne' : 'en');
-    toast.info(`Switched to ${currentLanguage === 'en' ? 'Nepali' : 'English'}`);
+    const nextLang = i18n.language === 'en' ? 'np' : 'en';
+    i18n.changeLanguage(nextLang);
+    toast.info(`Switched to ${nextLang === 'en' ? 'English' : 'Nepali'}`);
   };
 
   const themeColors = {
@@ -216,13 +218,16 @@ const ArticleReader: React.FC = () => {
     dark: 'prose-invert'
   };
 
+  const displayTitle = (i18n.language === 'np' && article.title_ne) ? article.title_ne : article.title;
+  const displayContent = (i18n.language === 'np' && article.content_ne) ? article.content_ne : article.content;
+
   return (
     <div 
       ref={scrollContainerRef}
       className={`fixed inset-0 overflow-y-auto transition-colors duration-300 ${themeColors[theme]} selection:bg-primary-200 selection:text-primary-900 z-[100]`}
     >
       <SEO 
-        title={currentLanguage === 'en' ? article.title : (article.title_ne || article.title)}
+        title={displayTitle}
         description={article.excerpt || `Read this article on BFI Notes.`}
       />
       <Watermark />
@@ -243,16 +248,16 @@ const ArticleReader: React.FC = () => {
           <button 
             onClick={() => navigate('/articles')}
             className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            title="Exit Reader"
+            title={t('Exit Reader')}
           >
             <ArrowLeft size={20} />
           </button>
           <div className="hidden sm:block">
             <h1 className="text-sm font-bold truncate max-w-[200px] md:max-w-[400px]">
-              {currentLanguage === 'en' ? article.title : (article.title_ne || article.title)}
+              {displayTitle}
             </h1>
             <p className="text-[10px] opacity-60 uppercase tracking-widest font-bold">
-              {article.category} • {article.readTime}
+              {t(article.category)} • {article.readTime}
             </p>
           </div>
         </div>
@@ -260,17 +265,17 @@ const ArticleReader: React.FC = () => {
         <div className="flex items-center gap-2">
           <button 
             onClick={toggleLanguage}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all ${currentLanguage === 'ne' ? 'bg-primary-500/10 text-primary-600' : ''}`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all ${i18n.language === 'np' ? 'bg-primary-500/10 text-primary-600' : ''}`}
             title="Switch Language"
           >
             <Languages size={20} />
-            <span className="text-xs font-bold uppercase">{currentLanguage}</span>
+            <span className="text-xs font-bold uppercase">{i18n.language}</span>
           </button>
           
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isMenuOpen ? 'bg-black/5 dark:bg-white/5' : ''}`}
-            title="Reader Settings"
+            title={t('Reader Settings')}
           >
             <Settings size={20} />
           </button>
@@ -278,7 +283,7 @@ const ArticleReader: React.FC = () => {
           <button 
             onClick={toggleFullscreen}
             className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            title="Toggle Fullscreen"
+            title={t('Toggle Fullscreen')}
           >
             {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
           </button>
@@ -313,7 +318,7 @@ const ArticleReader: React.FC = () => {
               <div className="space-y-8">
                 {/* Font Size */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Text Size</label>
+                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Text Size')}</label>
                   <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-xl p-1">
                     <button 
                       onClick={() => setFontSize(Math.max(12, fontSize - 2))}
@@ -333,7 +338,7 @@ const ArticleReader: React.FC = () => {
 
                 {/* Theme Selection */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Appearance</label>
+                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Appearance')}</label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['light', 'sepia', 'dark'] as ReaderTheme[]).map((t) => (
                       <button
@@ -355,12 +360,12 @@ const ArticleReader: React.FC = () => {
 
                 {/* Fullscreen Toggle */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Screen Mode</label>
+                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Screen Mode')}</label>
                   <button 
                     onClick={toggleFullscreen}
                     className="w-full flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-xl p-4 font-bold text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
-                    <span>{isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}</span>
+                    <span>{isFullscreen ? t('Exit Fullscreen') : t('Enter Fullscreen')}</span>
                     {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                   </button>
                 </div>
@@ -376,13 +381,13 @@ const ArticleReader: React.FC = () => {
           <FadeIn>
             <header className="mb-8 text-center">
               <div className="inline-block px-3 py-1 rounded-full bg-primary-500/10 text-primary-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
-                {article.category}
+                {t(article.category)}
               </div>
               <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
-                {currentLanguage === 'en' ? article.title : (article.title_ne || article.title)}
+                {displayTitle}
               </h1>
-              {currentLanguage === 'ne' && !article.title_ne && (
-                <p className="mt-2 text-xs text-amber-500 font-medium italic">Nepali version not available, showing English.</p>
+              {i18n.language === 'np' && !article.title_ne && (
+                <p className="mt-2 text-xs text-amber-500 font-medium italic">{t('Nepali missing')}</p>
               )}
             </header>
           </FadeIn>
@@ -399,7 +404,7 @@ const ArticleReader: React.FC = () => {
             >
               <div 
                 ref={contentRef}
-                lang={currentLanguage === 'ne' ? 'ne' : 'en'}
+                lang={i18n.language === 'np' ? 'ne' : 'en'}
                 className={`prose prose-lg max-w-none transition-all duration-300 ${proseTheme[theme]}
                   prose-headings:font-bold prose-headings:tracking-tight
                   prose-p:leading-normal
@@ -409,7 +414,7 @@ const ArticleReader: React.FC = () => {
                 style={{ fontSize: `${fontSize}px` }}
                 dangerouslySetInnerHTML={{ 
                   __html: DOMPurify.sanitize((() => {
-                    let html = currentLanguage === 'en' ? article.content : (article.content_ne || article.content);
+                    let html = displayContent;
                     if (!html) return '';
                     
                     // If content has literal markdown syntax hanging around, parse it
@@ -437,7 +442,7 @@ const ArticleReader: React.FC = () => {
           <FadeIn delay={400}>
             <div className={`mt-12 pt-8 border-t flex items-center justify-end gap-6 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
               <div className="text-right">
-                <p className="text-[10px] uppercase tracking-widest font-bold text-primary-500 mb-1">About the Author</p>
+                <p className="text-[10px] uppercase tracking-widest font-bold text-primary-500 mb-1">{t('About Author')}</p>
                 <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{article.authorName}</h3>
                 <p className="text-sm opacity-60 font-medium mt-1 leading-relaxed max-w-[250px] ml-auto text-slate-600 dark:text-slate-400">
                   {article.authorBio || 'BFI Subject Matter Expert'}
@@ -472,7 +477,7 @@ const ArticleReader: React.FC = () => {
           className={`flex items-center gap-2 px-6 py-3 rounded-full shadow-2xl border backdrop-blur-xl transition-all active:scale-95 ${theme === 'dark' ? 'bg-white/10 border-white/10 text-white' : 'bg-black/5 border-black/5 text-slate-900'}`}
         >
           <Type size={16} />
-          <span className="text-xs font-bold uppercase tracking-widest">Appearance</span>
+          <span className="text-xs font-bold uppercase tracking-widest">{t('Appearance')}</span>
         </button>
       </div>
     </div>

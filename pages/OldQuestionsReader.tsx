@@ -19,6 +19,7 @@ import { supabase } from '../lib/supabase';
 import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
 import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -50,6 +51,7 @@ function readStoredReaderFontSize(): number {
 export default function OldQuestionsReader() {
   const { id, bank, level } = useParams<{ id: string; bank: string; level: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [oq, setOq] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -144,9 +146,9 @@ export default function OldQuestionsReader() {
   if (!oq) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-6 text-center">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Past Paper Not Found</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">{t('Paper Not Found')}</h1>
         <button onClick={() => navigate(-1)} className="bg-primary-600 hover:bg-primary-500 text-white px-6 py-3 rounded-xl transition-all font-bold">
-          Go Back
+          {t('Go Back')}
         </button>
       </div>
     );
@@ -183,11 +185,11 @@ export default function OldQuestionsReader() {
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(`/old-questions/${encodeURIComponent(bank!)}/${encodeURIComponent(level!)}`)}>
               <div className="flex items-center gap-2 text-sm font-bold text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors bg-black/5 dark:bg-white/5 px-4 py-2 rounded-full shadow-sm">
                 <ArrowLeft size={16} />
-                <span>Go Back</span>
+                <span>{t('Go Back')}</span>
               </div>
               <div className="hidden sm:flex flex-col border-l border-slate-200 dark:border-slate-700 pl-4">
-                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">Old Question</span>
-                 <span className="font-bold tracking-tight leading-none truncate max-w-[150px]">{decodeURIComponent(bank || '')} {oq.year}</span>
+                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none mb-1">{t('Old Questions Title')}</span>
+                 <span className="font-bold tracking-tight leading-none truncate max-w-[150px]">{t(decodeURIComponent(bank || ''))} {oq.year}</span>
               </div>
             </div>
             
@@ -199,7 +201,7 @@ export default function OldQuestionsReader() {
                     <button onClick={() => setFontSize(Math.min(READER_FONT_MAX, fontSize + 2))} className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-full transition-colors"><Plus size={14} /></button>
                  </div>
                )}
-               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isMenuOpen ? 'bg-black/5 dark:bg-white/5' : ''}`}><Settings size={20} /></button>
+               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isMenuOpen ? 'bg-black/5 dark:bg-white/5' : ''}`} aria-label={t('Reader Settings')}><Settings size={20} /></button>
             </div>
           </div>
         </div>
@@ -226,7 +228,7 @@ export default function OldQuestionsReader() {
                 {/* Font Size */}
                 {oq.content && (
                   <div>
-                    <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Text Size</label>
+                    <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Text Size')}</label>
                     <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-xl p-1">
                       <button 
                         onClick={() => setFontSize(Math.max(READER_FONT_MIN, fontSize - 2))}
@@ -247,21 +249,22 @@ export default function OldQuestionsReader() {
 
                 {/* Theme Selection */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Appearance</label>
+                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Appearance')}</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {(['light', 'sepia', 'dark'] as ReaderTheme[]).map((t) => (
+                    {(['light', 'sepia', 'dark'] as ReaderTheme[]).map((tr) => (
                       <button
-                        key={t}
-                        onClick={() => setTheme(t)}
+                        key={tr}
+                        onClick={() => setTheme(tr)}
                         className={`h-12 rounded-xl border-2 transition-all flex items-center justify-center ${
-                          t === 'light' ? 'bg-white border-slate-200' : 
-                          t === 'sepia' ? 'bg-[#f4ecd8] border-[#e2d5b5]' : 
+                          tr === 'light' ? 'bg-white border-slate-200' : 
+                          tr === 'sepia' ? 'bg-[#f4ecd8] border-[#e2d5b5]' : 
                           'bg-[#121212] border-white/10'
-                        } ${theme === t ? 'ring-2 ring-primary-500 border-transparent' : 'opacity-60 hover:opacity-100'}`}
+                        } ${theme === tr ? 'ring-2 ring-primary-500 border-transparent' : 'opacity-60 hover:opacity-100'}`}
+                        title={t(tr.charAt(0).toUpperCase() + tr.slice(1))}
                       >
-                        {t === 'light' && <Sun size={16} className="text-slate-400" />}
-                        {t === 'sepia' && <BookOpen size={16} className="text-[#8c7355]" />}
-                        {t === 'dark' && <Moon size={16} className="text-slate-500" />}
+                        {tr === 'light' && <Sun size={16} className="text-slate-400" />}
+                        {tr === 'sepia' && <BookOpen size={16} className="text-[#8c7355]" />}
+                        {tr === 'dark' && <Moon size={16} className="text-slate-500" />}
                       </button>
                     ))}
                   </div>
@@ -269,12 +272,12 @@ export default function OldQuestionsReader() {
 
                 {/* Fullscreen Toggle */}
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">Screen Mode</label>
+                  <label className="text-[10px] uppercase font-bold tracking-widest opacity-50 mb-4 block">{t('Screen Mode')}</label>
                   <button 
                     onClick={toggleFullscreen}
                     className="w-full flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-xl p-4 font-bold text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
-                    <span>{isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}</span>
+                    <span>{isFullscreen ? t('Exit Fullscreen') : t('Enter Fullscreen')}</span>
                     {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                   </button>
                 </div>
@@ -288,9 +291,9 @@ export default function OldQuestionsReader() {
         <div className="min-h-full py-16 px-4 flex justify-center">
           <FadeIn className="w-full max-w-4xl mx-auto">
             <div className="flex items-center gap-2 mb-8 justify-center">
-               <span className="text-xs font-bold uppercase tracking-wider text-primary-600">{decodeURIComponent(bank || '')}</span>
+               <span className="text-xs font-bold uppercase tracking-wider text-primary-600">{t(decodeURIComponent(bank || ''))}</span>
                <ChevronRight size={14} />
-               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{oq.year} Paper</span>
+               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{oq.year} {t('Paper')}</span>
             </div>
 
             <div ref={contentRef} className="w-full">
@@ -330,7 +333,11 @@ export default function OldQuestionsReader() {
                 );
               })() : oq.pdf_url ? (
                 <div className="document-paper mb-12 flex flex-col items-center p-0 overflow-hidden bg-white shadow-xl">
-                  <Document file={oq.pdf_url} onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
+                  <Document 
+                    file={oq.pdf_url} 
+                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                    loading={<div className="p-20 text-slate-400">{t('Processing PDF')}</div>}
+                  >
                     {Array.from(new Array(numPages), (el, index) => (
                       <div key={`page_${index + 1}`} className="mb-4 shadow-sm w-full flex justify-center bg-white border-b border-slate-100 last:border-b-0">
                         <Page 
@@ -338,13 +345,14 @@ export default function OldQuestionsReader() {
                           width={containerWidth ? containerWidth : undefined}
                           renderTextLayer={false}
                           renderAnnotationLayer={false}
+                          loading={<div className="p-20 text-slate-400">{t('Rendering')}</div>}
                         />
                       </div>
                     ))}
                   </Document>
                 </div>
               ) : (
-                <div className="text-center py-20 text-slate-500 italic">No content available for this paper.</div>
+                <div className="text-center py-20 text-slate-500 italic">{t('No content available')}</div>
               )}
             </div>
           </FadeIn>

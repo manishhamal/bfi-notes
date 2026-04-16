@@ -13,8 +13,8 @@ export default function SolutionsSelector() {
 
   return (
     <BankLevelSelector 
-      title="Old Question Solutions"
-      subtitle="Find solved answers for past exams. Select your bank and level to browse."
+      title="Solutions Selector Title"
+      subtitle="Solutions Selector Sub"
       baseRoute="/solutions"
       onSelect={handleSelect}
       initialBank={bank}

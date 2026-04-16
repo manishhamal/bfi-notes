@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { User, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ArticleCardProps {
   article: Article;
@@ -11,6 +12,10 @@ interface ArticleCardProps {
 
 const ArticleCard: React.FC<ArticleCardProps> = memo(({ article, variant = 'standard', compact = false }) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const title = (i18n.language === 'np' && article.title_ne) ? article.title_ne : article.title;
+  const excerpt = (i18n.language === 'np' && article.excerpt_ne) ? article.excerpt_ne : article.excerpt;
 
   return (
     <div 
@@ -21,7 +26,7 @@ const ArticleCard: React.FC<ArticleCardProps> = memo(({ article, variant = 'stan
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-md border border-primary-500/10">
-              {article.category}
+              {t(article.category)}
             </span>
           </div>
 
@@ -50,10 +55,10 @@ const ArticleCard: React.FC<ArticleCardProps> = memo(({ article, variant = 'stan
         
         <div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-2 leading-tight">
-            {article.title}
+            {title}
           </h3>
           <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 md:mb-1 font-medium">
-            {article.excerpt}
+            {excerpt}
           </p>
         </div>
 

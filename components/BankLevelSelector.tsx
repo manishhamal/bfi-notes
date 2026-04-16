@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BANKS, LEVELS, Bank, Level } from '../types';
 import FadeIn from './FadeIn';
 import { Building2, Layers, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface BankLevelSelectorProps {
   title: string;
@@ -14,6 +15,7 @@ interface BankLevelSelectorProps {
 
 export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect, initialBank }: BankLevelSelectorProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
 
   const handleBankSelect = (bank: Bank) => {
@@ -56,10 +58,10 @@ export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect
                 className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 mx-auto md:mx-0 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm"
              >
                 <ArrowLeft size={16} />
-                {selectedBank ? 'Back to Banks' : 'Go Back'}
+                {selectedBank ? t('Back to Banks') : t('Go Back')}
              </button>
-             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-2 leading-tight">{title}</h1>
-             <p className="text-slate-600 dark:text-slate-400 text-base md:text-lg">{subtitle}</p>
+             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-2 leading-tight">{t(title)}</h1>
+             <p className="text-slate-600 dark:text-slate-400 text-base md:text-lg">{t(subtitle)}</p>
           </div>
 
           {!selectedBank ? (
@@ -73,7 +75,7 @@ export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect
                    <div className="w-14 h-14 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/40 text-slate-400 group-hover:text-primary-500 transition-all">
                      <Building2 size={24} />
                    </div>
-                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">{bank}</h3>
+                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t(bank)}</h3>
                  </button>
                ))}
             </div>
@@ -84,12 +86,12 @@ export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect
                    <Building2 size={24} />
                  </div>
                  <div>
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Selected Bank</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{selectedBank}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">{t('Selected Bank')}</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{t(selectedBank)}</div>
                  </div>
                </div>
 
-               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 text-center md:text-left uppercase tracking-wider">Select Level</h2>
+               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 text-center md:text-left uppercase tracking-wider">{t('Select Level')}</h2>
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                  {LEVELS.map((level) => (
                    <button
@@ -103,7 +105,7 @@ export default function BankLevelSelector({ title, subtitle, baseRoute, onSelect
                        </div>
                        <ArrowRight size={20} className="text-slate-300 dark:text-slate-700 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
                      </div>
-                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">{level}</h3>
+                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t(level)}</h3>
                    </button>
                  ))}
                </div>

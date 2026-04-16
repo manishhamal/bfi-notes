@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SEOProps {
   title?: string;
@@ -7,13 +8,15 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({ title, description, keywords }) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
-    const baseTitle = 'BFI Notes';
-    document.title = title ? `${title} | ${baseTitle}` : `${baseTitle} | By Students, For Students`;
+    const baseTitle = t('BFI Notes');
+    document.title = title ? `${title} | ${baseTitle}` : `${baseTitle} | ${t('BY Students, For Students.')}`;
 
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', description || 'A clean, minimalist platform for Bank and Financial Institution study materials in Nepal.');
+      metaDescription.setAttribute('content', description || t('Home Subtitle'));
     }
 
     const metaKeywords = document.querySelector('meta[name="keywords"]');
@@ -25,7 +28,7 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords }) => {
         newKeywords.content = keywords;
         document.head.appendChild(newKeywords);
     }
-  }, [title, description, keywords]);
+  }, [title, description, keywords, t]);
 
   return null;
 };

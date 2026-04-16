@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import FadeIn from '../components/FadeIn';
 import { FileText, ArrowLeft, Loader2, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function OldQuestionsArchive() {
   const { bank, level } = useParams<{ bank: string; level: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,18 +49,18 @@ export default function OldQuestionsArchive() {
               className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full w-fit"
             >
               <ArrowLeft size={16} />
-              Go Back
+              {t('Go Back')}
             </button>
             <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-bold uppercase tracking-widest text-xs mb-2">
-              <span className="bg-primary-100 dark:bg-primary-900/30 px-2.5 py-1 rounded-md">{decodedBank}</span>
+              <span className="bg-primary-100 dark:bg-primary-900/30 px-2.5 py-1 rounded-md">{t(decodedBank)}</span>
               <span>•</span>
-              <span className="bg-primary-100 dark:bg-primary-900/30 px-2.5 py-1 rounded-md">{decodedLevel}</span>
+              <span className="bg-primary-100 dark:bg-primary-900/30 px-2.5 py-1 rounded-md">{t(decodedLevel)}</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
-              Old Question Papers
+              {t('Old Questions Archive Title')}
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-lg">
-              Search by year or select from the list below.
+              {t('Archive Subtitle')}
             </p>
           </div>
 
@@ -70,7 +72,7 @@ export default function OldQuestionsArchive() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search year (e.g., 2078)..."
+                  placeholder={t('Search Year')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all font-medium"
@@ -85,13 +87,13 @@ export default function OldQuestionsArchive() {
             ) : questions.length === 0 ? (
               <div className="text-center p-12 text-slate-500">
                 <FileText size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="font-medium text-lg text-slate-900 dark:text-white mb-1">No past papers found</p>
-                <p>We haven't uploaded any old questions for this combination yet.</p>
+                <p className="font-medium text-lg text-slate-900 dark:text-white mb-1">{t('No papers found')}</p>
+                <p>{t('No papers desc')}</p>
               </div>
             ) : filteredQuestions.length === 0 ? (
               <div className="text-center p-12 text-slate-500">
-                <p className="font-medium text-lg text-slate-900 dark:text-white mb-1">No matches found</p>
-                <p>Try searching for a different year.</p>
+                <p className="font-medium text-lg text-slate-900 dark:text-white mb-1">{t('No matches')}</p>
+                <p>{t('Try different year')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -106,7 +108,7 @@ export default function OldQuestionsArchive() {
                     </div>
                     <div className="min-w-0">
                       <h3 className="font-bold text-slate-900 dark:text-white text-lg truncate">{q.year}</h3>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">View PDF</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('View PDF')}</p>
                     </div>
                   </button>
                 ))}

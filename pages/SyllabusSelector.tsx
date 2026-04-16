@@ -6,8 +6,8 @@ export default function SyllabusSelector() {
   const { bank } = useParams<{ bank: string }>();
   return (
     <BankLevelSelector 
-      title="Syllabus Vault"
-      subtitle="Select your preferred bank and level to view the official syllabus."
+      title="Syllabus Selector Title"
+      subtitle="Syllabus Selector Sub"
       baseRoute="/syllabus"
       initialBank={bank}
     />

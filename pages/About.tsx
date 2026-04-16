@@ -3,12 +3,15 @@ import { AUTHOR } from '../constants';
 import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
+import { useTranslation } from 'react-i18next';
 
 const About: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-16 pb-24">
       <SEO 
-        title="About" 
+        title={t('About')} 
         description="Learn more about BFI Notes, our mission to provide quality banking study materials in Nepal, and the team behind the platform."
       />
       {/* Intro */}
@@ -23,7 +26,7 @@ const About: React.FC = () => {
           />
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              About BFI Notes
+              {t('About Title')}
             </h1>
             <p className="text-lg text-slate-700 dark:text-slate-300 leading-tight">
               {AUTHOR.bio}
@@ -41,27 +44,27 @@ const About: React.FC = () => {
       <FadeIn delay={200}>
         <div className="space-y-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">
-            Our Mission
+            {t('Mission Title')}
           </h2>
           <div className="space-y-6 text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
             <p>
-              Preparing for Nepal's government banking exams (NRB, RBB, NBL, ADBL) requires a deep understanding of banking laws, management principles, and the economic landscape of Nepal.
+              {t('Mission Intro')}
             </p>
             <p>
-              Our platform is dedicated to providing:
+              {t('Platform Dedicated')}
             </p>
             <ul className="space-y-4">
               <li className="flex gap-4">
                 <span className="font-bold text-primary-600 dark:text-primary-400">•</span>
-                <span><span className="font-bold text-slate-900 dark:text-white">Specialized Banking Notes:</span> In-depth coverage of NRB Directives, BAFIA, and the NRB Act.</span>
+                <span><span className="font-bold text-slate-900 dark:text-white">{t('Specialized Notes Label')}:</span> {t('Specialized Notes Desc')}</span>
               </li>
               <li className="flex gap-4">
                 <span className="font-bold text-primary-600 dark:text-primary-400">•</span>
-                <span><span className="font-bold text-slate-900 dark:text-white">Management & Economics:</span> Core concepts tailored for banking competitive exams.</span>
+                <span><span className="font-bold text-slate-900 dark:text-white">{t('Mgmt Econ Label')}:</span> {t('Mgmt Econ Desc')}</span>
               </li>
               <li className="flex gap-4">
                 <span className="font-bold text-primary-600 dark:text-primary-400">•</span>
-                <span><span className="font-bold text-slate-900 dark:text-white">BFI Specific Content:</span> Resources specifically designed for the requirements of different banks.</span>
+                <span><span className="font-bold text-slate-900 dark:text-white">{t('BFI Content Label')}:</span> {t('BFI Content Desc')}</span>
               </li>
             </ul>
           </div>
@@ -71,10 +74,10 @@ const About: React.FC = () => {
       <FadeIn delay={300}>
         <div className="space-y-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">
-            Get in Touch
+            {t('Get In Touch')}
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-            Have questions or need specific study materials? We're here to help. Reach out to our team:
+            {t('Touch Subtitle')}
           </p>
           <div className="flex items-center gap-4">
             <Mail size={20} className="text-slate-400" />
