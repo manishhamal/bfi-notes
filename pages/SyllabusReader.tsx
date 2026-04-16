@@ -8,7 +8,8 @@ import {
   Minimize2,
   BookOpen,
   Settings,
-  ChevronRight
+  ChevronRight,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import FadeIn from '../components/FadeIn';
@@ -16,6 +17,8 @@ import { supabase } from '../lib/supabase';
 import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useTranslation } from 'react-i18next';
+import { downloadFile } from '../lib/utils';
+import { toast } from 'react-toastify';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -62,10 +65,22 @@ export default function SyllabusReader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const lastScrollYRef = useRef(0);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = async () => {
+    if (!pdfUrl) return;
+    setIsDownloading(true);
+    const filename = `Syllabus_${t(bank || '')}_${t(level || '')}.pdf`.replace(/\s+/g, '_');
+    const success = await downloadFile(pdfUrl, filename);
+    if (!success) {
+      toast.error(t('Failed to load PDF'));
+    }
+    setIsDownloading(false);
+  };
 
   // Sync body background with reader theme
   useEffect(() => {
@@ -208,6 +223,19 @@ export default function SyllabusReader() {
             </div>
             
             <div className="flex items-center gap-1 sm:gap-2">
+              <button 
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className={`p-2 rounded-full transition-colors flex items-center gap-2 ${
+                  theme === 'dark' ? 'hover:bg-slate-800' : 
+                  theme === 'sepia' ? 'hover:bg-[#e8dec7]' : 
+                  'hover:bg-slate-100'
+                } ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                title={t('Download')}
+              >
+                <Download size={20} className={isDownloading ? 'animate-bounce' : ''} />
+              </button>
+
               <div className="relative">
                 <button 
                   onClick={() => setIsMenuOpen(!isMenuOpen)}

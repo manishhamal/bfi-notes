@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Type,
   Minus,
-  Plus
+  Plus,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import FadeIn from '../components/FadeIn';
@@ -20,6 +21,8 @@ import Watermark from '../components/Watermark';
 import { Document, Page, pdfjs } from 'react-pdf';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
+import { downloadFile } from '../lib/utils';
+import { toast } from 'react-toastify';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -62,10 +65,22 @@ export default function OldQuestionsReader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const lastScrollYRef = useRef(0);
+
+  const handleDownload = async () => {
+    if (!oq?.pdf_url) return;
+    setIsDownloading(true);
+    const filename = `Question_${t(decodeURIComponent(bank || ''))}_${oq.year}.pdf`.replace(/\s+/g, '_');
+    const success = await downloadFile(oq.pdf_url, filename);
+    if (!success) {
+      toast.error(t('Failed to load PDF'));
+    }
+    setIsDownloading(false);
+  };
 
   useEffect(() => {
     const fetchOQ = async () => {
@@ -194,6 +209,16 @@ export default function OldQuestionsReader() {
             </div>
             
             <div className="flex items-center gap-2">
+               {oq.pdf_url && (
+                 <button 
+                   onClick={handleDownload}
+                   disabled={isDownloading}
+                   className={`p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                   title={t('Download')}
+                 >
+                   <Download size={20} className={isDownloading ? 'animate-bounce' : ''} />
+                 </button>
+               )}
                {oq.content && (
                  <div className="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 rounded-full p-1 mr-2">
                     <button onClick={() => setFontSize(Math.max(READER_FONT_MIN, fontSize - 2))} className="p-1.5 hover:bg-white dark:hover:bg-slate-800 rounded-full transition-colors"><Minus size={14} /></button>

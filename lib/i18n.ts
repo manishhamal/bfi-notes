@@ -92,9 +92,6 @@ const resources = {
       "Syllabus Selector Sub": "Official syllabus documents for various banking exams. Select to view.",
       "Solutions Selector Title": "Question Solutions",
       "Solutions Selector Sub": "Curated expert solutions for past exam questions. Select a bank and level.",
-      "Text Size": "Text Size",
-      "Appearance": "Appearance",
-      "Screen Mode": "Screen Mode",
       "Light": "Light",
       "Sepia": "Sepia",
       "Dark": "Dark",
@@ -104,13 +101,14 @@ const resources = {
       "Syllabus Not Found": "Syllabus Not Found",
       "Paper Not Found": "Past Paper Not Found",
       "No content available": "No content available for this paper.",
-      "Go Back": "Go Back",
       "Banking": "Banking",
       "Management": "Management",
       "Account": "Account",
       "Economic": "Economic",
       "Maths": "Maths",
-      "Computer": "Computer"
+      "Computer": "Computer",
+      "Download": "Download",
+      "Downloading...": "Downloading..."
     }
   },
   np: {
@@ -210,13 +208,14 @@ const resources = {
       "Paper Not Found": "प्रश्नपत्र फेला परेन",
       "No content available": "यस पत्रको लागि कुनै सामग्री उपलब्ध छैन।",
       "Search and Select": "खोज्नुहोस् र चयन गर्नुहोस्",
-      "Clear filters": "फल्टरहरू हटाउनुहोस्",
       "Banking": "बैंकिङ्ग",
       "Management": "म्यानेजमेन्ट",
       "Account": "एकाउन्ट",
       "Economic": "इकोनोमिक",
       "Maths": "म्याथ्स",
-      "Computer": "कम्प्युटर"
+      "Computer": "कम्प्युटर",
+      "Download": "डाउनलोड",
+      "Downloading...": "डाउनलोड हुँदैछ..."
     }
   }
 };
